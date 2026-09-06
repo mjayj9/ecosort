@@ -88,7 +88,7 @@ confidence는 0~1의 자체 판단 확신이며 통계적으로 검증된 정확
 
 
 // Only final answer content is accumulated. Reasoning deltas are discarded immediately.
-async function readStream(response) {
+async function readStream(response, parseContent = parseAnalysis) {
   if (!response.body) throw invalidResponse("empty-stream");
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -136,11 +136,11 @@ async function readStream(response) {
       }
     }
     if (!done || !stopped) throw invalidResponse("stream-incomplete");
-    return parseAnalysis(content);
+    return parseContent(content);
   } finally { await reader.cancel().catch(() => {}); }
 }
 
-async function analyzeWithNim(image, { apiKey, model = MODEL, fetchImpl = globalThis.fetch, timeoutMs = 105000 } = {}) {
+async function analyzeWithNim(image, { apiKey, model = MODEL, fetchImpl = globalThis.fetch, timeoutMs = 105000, prompt = PROMPT, parseContent = parseAnalysis } = {}) {
   validateImage(image);
   validateModel(model);
   if (typeof apiKey !== "string" || !apiKey.trim()) {
@@ -158,7 +158,7 @@ async function analyzeWithNim(image, { apiKey, model = MODEL, fetchImpl = global
       headers: { "Authorization": `Bearer ${apiKey.trim()}`, "Content-Type": "application/json", "Accept": "text/event-stream" },
       body: JSON.stringify({ model, stream: true, max_tokens: 4096,
         ...(model === MODEL ? { temperature: 1, reasoning_effort: "low" } : { temperature: 0.2, reasoning_budget: 1024 }),
-        messages: [ { role: "system", content: PROMPT }, { role: "user", content: [
+        messages: [ { role: "system", content: prompt }, { role: "user", content: [
           { type: "text", text: "이 사진의 물품과 오염 상태를 분석하고 지정한 JSON만 반환해 주세요." },
           { type: "image_url", image_url: { url: `data:image/jpeg;base64,${image}` } },
         ] } ] }),
@@ -170,7 +170,7 @@ async function analyzeWithNim(image, { apiKey, model = MODEL, fetchImpl = global
     if (response.status === 202) throw new AnalysisError("unavailable", "AI 처리가 지연되고 있습니다. 잠시 후 다시 시도해 주세요.");
     if (response.status === 408 || response.status === 504) throw new AnalysisError("deadline-exceeded", "분석 시간이 초과되었습니다. 연결 상태를 확인하고 다시 시도해 주세요.");
     if (!response.ok) throw new AnalysisError("unavailable", "AI 서버에서 분석하지 못했습니다. 잠시 후 다시 시도해 주세요.");
-    if (response.headers?.get("content-type")?.includes("text/event-stream")) return await readStream(response);
+    if (response.headers?.get("content-type")?.includes("text/event-stream")) return await readStream(response, parseContent);
     let data;
     try { data = await response.json(); } catch (error) {
       if (controller.signal.aborted) throw error;
@@ -178,7 +178,7 @@ async function analyzeWithNim(image, { apiKey, model = MODEL, fetchImpl = global
     }
     const choice = data?.choices?.[0];
     if (choice?.finish_reason && choice.finish_reason !== "stop") throw invalidResponse();
-    return parseAnalysis(choice?.message?.content);
+    return parseContent(choice?.message?.content);
      } catch (error) {
        if (!error.retryable || attempt !== 0 || controller.signal.aborted) throw error;
        // No provider error body is logged. Never retry malformed JSON, auth, quota or ordinary HTTP errors.
