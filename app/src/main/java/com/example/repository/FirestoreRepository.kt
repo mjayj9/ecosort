@@ -1,6 +1,5 @@
 package com.example.repository
 
-import com.example.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -23,21 +22,13 @@ object FirestoreRepository {
     private val firestore by lazy { if (isFirebaseAvailable()) FirebaseFirestore.getInstance() else null }
     private val auth by lazy { if (isFirebaseAvailable()) FirebaseAuth.getInstance() else null }
 
-    // debug 빌드에서 Firebase 미구성일 때만 사용하는 로컬 저장소 (release에서는 진입 불가)
-    private fun getDebugPrefs(context: android.content.Context): android.content.SharedPreferences? {
-        if (!BuildConfig.DEBUG) return null
-        val email = com.example.util.GlobalState.userEmail.ifBlank { "debug" }
-        return context.getSharedPreferences("ecosort_debug_${email.replace(".", "_")}", android.content.Context.MODE_PRIVATE)
-    }
+
 
     suspend fun loadUserProfile(context: android.content.Context): Map<String, Any>? {
         val fs = firestore
         val au = auth
         if (fs == null || au == null || au.currentUser == null) {
-            val prefs = getDebugPrefs(context) ?: return null
-            val points = prefs.getLong("points", 0L)
-            val apartmentId = prefs.getString("apartmentId", "") ?: ""
-            return mapOf("points" to points, "apartmentId" to apartmentId)
+            return null
         }
 
         val userId = au.currentUser?.uid ?: return null
@@ -60,9 +51,7 @@ object FirestoreRepository {
         val fs = firestore
         val au = auth
         if (fs == null || au == null || au.currentUser == null) {
-            val prefs = getDebugPrefs(context) ?: return false
-            prefs.edit().putString("apartmentId", apartmentId).apply()
-            return true
+            return false
         }
 
         val userId = au.currentUser?.uid ?: return false

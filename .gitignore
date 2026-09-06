@@ -21,3 +21,20 @@ functions/node_modules/
 firestore-debug.log
 firebase-debug.log
 *.hprof
+
+.env.*
+!.env.example
+**/.secret.local
+**/.env
+**/.env.*
+**/*service-account*.json
+**/*.jks
+**/*.keystore
+**/build/
+functions/*-debug.log
+
+!**/.env.example
+
+# Local IDE state and generated release bundles
+/.idea/
+/app/release/

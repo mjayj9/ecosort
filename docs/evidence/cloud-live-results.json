@@ -1,0 +1,105 @@
+{
+  "verifiedAt": "2026-09-06T13:37:12.760Z",
+  "project": "focused-rig-vcf5x",
+  "results": [
+    {
+      "name": "missing-app-check",
+      "httpStatus": 401,
+      "elapsedMs": 279,
+      "error": {
+        "message": "Unauthenticated",
+        "status": "UNAUTHENTICATED"
+      }
+    },
+    {
+      "name": "missing-auth",
+      "httpStatus": 401,
+      "elapsedMs": 275,
+      "error": {
+        "message": "로그인이 필요합니다. 다시 로그인해 주세요.",
+        "status": "UNAUTHENTICATED"
+      }
+    },
+    {
+      "name": "invalid-image",
+      "httpStatus": 400,
+      "elapsedMs": 200,
+      "error": {
+        "message": "사진 형식이나 크기를 확인해 주세요. JPEG 사진을 다시 선택해 주세요.",
+        "status": "INVALID_ARGUMENT"
+      }
+    },
+    {
+      "name": "client-model-rejected",
+      "httpStatus": 400,
+      "elapsedMs": 195,
+      "error": {
+        "message": "사진만 전송할 수 있습니다. 앱에서 서버 키를 전달할 수 없습니다.",
+        "status": "INVALID_ARGUMENT"
+      }
+    },
+    {
+      "name": "clean_bottle",
+      "httpStatus": 200,
+      "elapsedMs": 25847,
+      "result": {
+        "itemName": "투명 플라스틱 물병",
+        "material": "PET",
+        "contaminationScore": 5,
+        "confidence": 0.95,
+        "decision": "RECYCLE",
+        "washSteps": [
+          "비우기"
+        ],
+        "disposalGuide": "PET병 전용 재활용함에 넣어 주세요.",
+        "reason": "병은 깨끗하고 비어 있으며, 표면에 오염이 거의 없어 재활용이 가능합니다.",
+        "warnings": [
+          "지자체·공동주택별 배출 기준이 다를 수 있습니다. 거주지 안내를 우선 확인하세요."
+        ],
+        "scanId": "QjdJFN2ez8uD4YVeTrcX",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"
+      }
+    },
+    {
+      "name": "dirty_plate",
+      "httpStatus": 200,
+      "elapsedMs": 27084,
+      "result": {
+        "itemName": "종이 접시 (라면 잔여물 포함)",
+        "material": "종이",
+        "contaminationScore": 85,
+        "confidence": 0.8,
+        "decision": "GENERAL_WASTE",
+        "washSteps": [],
+        "disposalGuide": "일반 쓰레기 bin에 버리세요",
+        "reason": "종이 접시에 음식물 잔여물과 소스가 많이 붙어 재활용이 불가능하며, 세척 시 파손될 위험이 있어 일반 쓰레기로 처리해야 한다.",
+        "warnings": [
+          "지자체·공동주택별 배출 기준이 다를 수 있습니다. 거주지 안내를 우선 확인하세요."
+        ],
+        "scanId": "NVKHsowLS571AuefJkgB",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"
+      }
+    },
+    {
+      "name": "blank",
+      "httpStatus": 200,
+      "elapsedMs": 13339,
+      "result": {
+        "itemName": "확인 불가",
+        "material": "확인 불가",
+        "contaminationScore": 0,
+        "confidence": 0,
+        "decision": "UNKNOWN",
+        "washSteps": [],
+        "disposalGuide": "물품 한 개와 오염된 면이 밝고 선명하게 보이도록 다시 촬영해 주세요. 용기는 내부를 보여 주세요.",
+        "reason": "이미지에 물품이 전혀 보이지 않아 판단이 불가능합니다.",
+        "warnings": [
+          "판단 보류: 사진만으로 재질 또는 오염 상태를 확신할 수 없습니다.",
+          "지자체·공동주택별 배출 기준이 다를 수 있습니다. 거주지 안내를 우선 확인하세요."
+        ],
+        "scanId": "VEk1OvcFQbGEPENhdHQ1",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"
+      }
+    }
+  ]
+}

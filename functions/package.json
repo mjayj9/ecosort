@@ -5,10 +5,16 @@
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run serve",
-    "deploy": "firebase deploy --only functions"
+    "deploy": "firebase deploy --only functions",
+    "test": "node --test test/*.test.js",
+    "check": "node --check index.js && node --check analysis.js",
+    "smoke:live": "node scripts/live-smoke.js",
+    "test:emulator": "node scripts/emulator-check.js",
+    "smoke:local": "node scripts/live-local.js",
+    "register:device": "node scripts/register-device.js"
   },
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "main": "index.js",
   "dependencies": {

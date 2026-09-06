@@ -13,7 +13,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.BuildConfig
 import com.example.util.GlobalState
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -21,6 +20,9 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.CancellationException
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 
@@ -38,16 +40,12 @@ fun checkFirebaseInitialized(): Boolean {
 fun LoginScreen(onLoginSuccess: (isNewUser: Boolean) -> Unit) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var emailInput by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-    var showSimulatedLoginDialog by remember { mutableStateOf(false) }
     var showPrivacyAgreementDialog by remember { mutableStateOf(false) }
+    var guestError by remember { mutableStateOf<String?>(null) }
     var pendingEmail by remember { mutableStateOf("") }
 
     val isFirebaseAvailable = remember { checkFirebaseInitialized() }
-    // 시뮬레이션 로그인은 debug 빌드에서 Firebase 미구성일 때만 허용된다.
-    // release 빌드에서는 Google 로그인 실패 = 로그인 실패이며 어떤 fallback도 없다.
-    val allowSimulatedLogin = BuildConfig.DEBUG && !isFirebaseAvailable
 
     val handleLoginSuccess = { email: String ->
         coroutineScope.launch {
@@ -132,20 +130,35 @@ fun LoginScreen(onLoginSuccess: (isNewUser: Boolean) -> Unit) {
             fontSize = 16.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.height(48.dp))
-
-        if (allowSimulatedLogin) {
-            // debug 빌드 + Firebase 미구성 환경 전용 시뮬레이터 입력창
-            OutlinedTextField(
-                value = emailInput,
-                onValueChange = { emailInput = it },
-                label = { Text("테스트 이메일 (debug 빌드 전용)") },
-                placeholder = { Text("test@example.com") },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
+        Text("사진 분석부터 체험할 수 있습니다. 실제 Firebase 익명 계정을 사용하며 포인트는 지급하지 않습니다.")
+        Button(onClick = {
+            isLoading = true
+            guestError = null
+            coroutineScope.launch {
+                try {
+                    withTimeout(20000) {
+                        val auth = com.example.repository.FirebaseBackend.auth
+                        if (auth.currentUser == null) auth.signInAnonymously().await()
+                    }
+                    isLoading = false
+                    onLoginSuccess(false)
+                } catch (e: CancellationException) {
+                    if (e !is kotlinx.coroutines.TimeoutCancellationException) throw e
+                    isLoading = false
+                    guestError = "인증 시간이 초과되었습니다. 연결을 확인하고 다시 시도해 주세요."
+                } catch (_: Exception) {
+                    isLoading = false
+                    guestError = "Firebase 로그인에 실패했습니다. 인터넷 연결과 서버 인증 설정을 확인해 주세요."
+                }
+            }
+        }, enabled = !isLoading, modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)) {
+            Text(if (isLoading) "연결 중…" else "사진 분석 시작하기")
         }
+        guestError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+        Spacer(modifier = Modifier.height(16.dp))
+
+
 
         Button(
             onClick = {
@@ -174,8 +187,6 @@ fun LoginScreen(onLoginSuccess: (isNewUser: Boolean) -> Unit) {
                         val signInIntent = googleSignInClient.signInIntent
                         googleSignInLauncher.launch(signInIntent)
                     }
-                } else if (allowSimulatedLogin) {
-                    showSimulatedLoginDialog = true
                 } else {
                     Toast.makeText(context, "서비스 초기화에 실패했습니다. 앱을 다시 설치하거나 관리자에게 문의해주세요.", Toast.LENGTH_LONG).show()
                 }
@@ -189,66 +200,14 @@ fun LoginScreen(onLoginSuccess: (isNewUser: Boolean) -> Unit) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
             } else {
                 Text(
-                    text = when {
-                        isFirebaseAvailable -> "Google 계정으로 안전하게 시작하기"
-                        allowSimulatedLogin -> "테스트 계정으로 시작하기 (debug)"
-                        else -> "Google 계정으로 안전하게 시작하기"
-                    },
+                    text = "Google 계정으로 안전하게 시작하기",
                     fontSize = 16.sp
                 )
             }
         }
     }
 
-    if (showSimulatedLoginDialog && allowSimulatedLogin) {
-        AlertDialog(
-            onDismissRequest = { showSimulatedLoginDialog = false },
-            title = { Text("테스트 계정 선택 (debug 전용)") },
-            text = {
-                Column {
-                    Text("Firebase가 구성되지 않은 debug 빌드입니다. 로컬 테스트용 이메일을 입력하세요. 서버 기능(AI 분석/포인트/쿠폰)은 동작하지 않습니다.")
-                    Spacer(modifier = Modifier.height(12.dp))
 
-                    OutlinedTextField(
-                        value = emailInput,
-                        onValueChange = { emailInput = it },
-                        label = { Text("이메일 직접 입력...") },
-                        placeholder = { Text("test@example.com") },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Button(
-                        onClick = {
-                            if (emailInput.isNotBlank()) {
-                                showSimulatedLoginDialog = false
-                                isLoading = true
-                                coroutineScope.launch {
-                                    GlobalState.userEmail = emailInput
-                                    if (!isFirebaseAvailable) {
-                                        GlobalState.isAdmin = emailInput.contains("admin") || emailInput == "mjayj9@gmail.com" || emailInput == "2025186@snu.ms.kr"
-                                    }
-                                    Toast.makeText(context, "테스트 로그인: $emailInput", Toast.LENGTH_SHORT).show()
-                                    handleLoginSuccess(emailInput)
-                                }
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = emailInput.isNotBlank()
-                    ) {
-                        Text("테스트 계정으로 로그인")
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showSimulatedLoginDialog = false }) {
-                    Text("취소")
-                }
-            }
-        )
-    }
 
     if (showPrivacyAgreementDialog) {
         AlertDialog(
@@ -263,15 +222,15 @@ fun LoginScreen(onLoginSuccess: (isNewUser: Boolean) -> Unit) {
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text("1. 수집하는 개인정보 항목", fontWeight = FontWeight.Bold)
-                    Text("이메일 주소, 소속 아파트 단지 정보, 서비스 이용 기록, 분리배출 촬영 사진(재질 판독 및 장소 인증)")
+                    Text("이메일 주소, 선택한 아파트 단지, 분석 이용 기록. 분석을 요청한 사진은 Firebase 서버를 거쳐 NVIDIA AI로 전송하며 앱 서버에는 사진을 저장하지 않습니다.")
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text("2. 개인정보 수집 및 이용 목적", fontWeight = FontWeight.Bold)
-                    Text("AI 기반 배달 쓰레기 오염도 분석 및 분리배출 인증 처리, 리워드 에코 포인트 적립 및 제휴처 상품권 교환 서비스 제공")
+                    Text("사진 속 물품과 오염 상태의 추정, 세척·배출 안내, 사용량 제한 및 계정 관리. 현재 MVP는 배출 인증, 포인트 지급, 쿠폰 교환을 제공하지 않습니다.")
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text("3. 개인정보 보유 및 이용 기간", fontWeight = FontWeight.Bold)
-                    Text("회원 탈퇴 시 즉시 파기 (단, 법령에 특별한 규정이 있는 경우 관련 법령에 따름)")
+                    Text("회원 탈퇴 시 프로필과 일일 사용량은 삭제합니다. 분석·거래 기록은 사용자 연결값을 삭제 처리하며 기록 자체는 남을 수 있습니다. NVIDIA 측 처리 정책은 별도로 확인해야 합니다.")
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text("※ 귀하는 개인정보 수집 및 이용에 대한 동의를 거부할 권리가 있습니다. 단, 동의 거부 시 에코소트 서비스 가입 및 이용이 제한됩니다.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)

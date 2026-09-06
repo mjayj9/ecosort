@@ -3,273 +3,48 @@ package com.example.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.example.BuildConfig
+import com.example.repository.AiVisionRepository
+import com.example.repository.FirebaseBackend
 import com.example.util.GlobalState
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(onLogout: () -> Unit) {
-    val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
-    var newGoal by remember { mutableStateOf(GlobalState.targetGoal.toString()) }
-    var apiKeyInput by remember { mutableStateOf(GlobalState.userApiKey) }
-    var showApiKey by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
     var message by remember { mutableStateOf("") }
-    var isDeleting by remember { mutableStateOf(false) }
-
-    fun clearLocalState() {
-        GlobalState.userEmail = ""
-        GlobalState.apartmentId = ""
-        GlobalState.apartmentName = ""
-        GlobalState.apartmentAddress = ""
-        GlobalState.apartmentLatitude = 0.0
-        GlobalState.apartmentLongitude = 0.0
-        GlobalState.currentCount = 0
-        GlobalState.currentPoints = 0
-        GlobalState.isAdmin = false
+    var deleting by remember { mutableStateOf(false) }
+    var confirmDelete by remember { mutableStateOf(false) }
+    fun logout() {
+        FirebaseBackend.auth.signOut()
+        GlobalState.userEmail = ""; GlobalState.apartmentId = ""; GlobalState.apartmentName = ""
+        GlobalState.currentPoints = 0; GlobalState.currentCount = 0; GlobalState.isAdmin = false
+        onLogout()
     }
-    
-    val isFirebaseAvailable = remember {
-        try {
-            com.google.firebase.FirebaseApp.getInstance()
-            true
-        } catch (e: Exception) {
-            false
-        }
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text("설정", style = MaterialTheme.typography.headlineMedium)
+        Text(if (BuildConfig.USE_FIREBASE_EMULATORS) "로컬 시연 계정 · 실제 Firebase Auth 에뮬레이터" else "계정: ${GlobalState.userEmail}")
+        Text("AI: NVIDIA NIM · 사용 모델은 분석 결과에 표시")
+        Text("사진은 1024px 이내로 축소·JPEG 압축 후 분석 서버로 전송합니다. 앱 서버는 사진을 저장하지 않고 분석 기록 번호와 판단·신뢰도를 기록합니다.")
+        Text("오염도와 신뢰도는 AI 추정이며, 정확도를 검증한 수치가 아닙니다. 거주지 배출 안내를 우선하세요.")
+        Text("포인트·쿠폰·단지 순위·광고는 현재 MVP에서 제공하지 않습니다.")
+        Button(onClick = ::logout, enabled = !deleting) { Text(if (BuildConfig.USE_FIREBASE_EMULATORS) "로컬 인증 다시 연결" else "로그아웃") }
+        if (!BuildConfig.USE_FIREBASE_EMULATORS) OutlinedButton(onClick = { confirmDelete = true }, enabled = !deleting) { Text("회원 탈퇴") }
+        if (message.isNotBlank()) Text(message)
     }
-    
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("설정 및 마이페이지") },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            Text("사용자 정보", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text("계정: ${GlobalState.userEmail}")
-            Text("소속 단지: ${GlobalState.apartmentName.ifBlank { GlobalState.apartmentId }}")
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            Text("목표 설정 (보상 차등 지급)", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(
-                "분리배출 목표 개수를 높게 설정할수록, 달성 시 더 많은 보너스 포인트가 지급됩니다.", 
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            Row(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = newGoal,
-                    onValueChange = { newGoal = it.filter { char -> char.isDigit() } },
-                    label = { Text("목표 개수") },
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = {
-                        val goal = newGoal.toIntOrNull()
-                        if (goal != null && goal > GlobalState.currentCount) {
-                            GlobalState.targetGoal = goal
-                            message = "목표가 ${goal}개로 설정되었습니다!"
-                        } else {
-                            message = "현재 진행률보다 높은 목표를 설정해주세요."
-                        }
-                    },
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Text("저장")
-                }
+    if (confirmDelete) AlertDialog(onDismissRequest = { confirmDelete = false }, title = { Text("회원 탈퇴") },
+        text = { Text("프로필을 삭제하고 사용 기록을 익명화합니다. 계정 삭제를 진행할까요?") },
+        confirmButton = { TextButton(onClick = {
+            confirmDelete = false; deleting = true
+            scope.launch {
+                val result = JSONObject(AiVisionRepository.deleteAccount())
+                deleting = false
+                if (result.optBoolean("success")) logout() else message = result.optString("error", "회원 탈퇴를 완료하지 못했습니다.")
             }
-            if(message.isNotEmpty()){
-                Text(message, color = MaterialTheme.colorScheme.primary)
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            Text("현재 진행률: ${GlobalState.currentCount} / ${GlobalState.targetGoal} 개")
-            LinearProgressIndicator(
-                progress = { (GlobalState.currentCount.toFloat() / GlobalState.targetGoal).coerceIn(0f, 1f) },
-                modifier = Modifier.fillMaxWidth().height(8.dp)
-            )
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            Text("API 설정", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(
-                "자신만의 Gemini API 키를 등록하여 분리배출 인식을 이용할 수 있습니다. 등록하지 않으면 공용 API 키를 사용합니다.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            OutlinedTextField(
-                value = apiKeyInput,
-                onValueChange = { apiKeyInput = it },
-                label = { Text("Gemini API Key") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = if (showApiKey) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    val image = if (showApiKey) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                    val description = if (showApiKey) "API 키 숨기기" else "API 키 보이기"
-                    IconButton(onClick = { showApiKey = !showApiKey }) {
-                        Icon(imageVector = image, contentDescription = description)
-                    }
-                }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = {
-                        GlobalState.saveApiKey(context, apiKeyInput.trim())
-                        message = "API 키가 성공적으로 저장되었습니다."
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("API 키 저장")
-                }
-                
-                if (GlobalState.userApiKey.isNotEmpty()) {
-                    OutlinedButton(
-                        onClick = {
-                            GlobalState.saveApiKey(context, "")
-                            apiKeyInput = ""
-                            message = "API 키가 삭제되었습니다. 공용 API 키를 사용합니다."
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                    ) {
-                        Text("API 키 삭제")
-                    }
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            Surface(
-                color = if (GlobalState.userApiKey.isNotEmpty()) {
-                    MaterialTheme.colorScheme.primaryContainer
-                } else {
-                    MaterialTheme.colorScheme.secondaryContainer
-                },
-                shape = MaterialTheme.shapes.small,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Info,
-                        contentDescription = "상태",
-                        tint = if (GlobalState.userApiKey.isNotEmpty()) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.secondary
-                        },
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = if (GlobalState.userApiKey.isNotEmpty()) {
-                            "현재 사용자 정의 API 키를 사용 중입니다."
-                        } else {
-                            "현재 공용 API 키를 사용 중입니다."
-                        },
-                        style = MaterialTheme.typography.labelMedium,
-                        color = if (GlobalState.userApiKey.isNotEmpty()) {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.onSecondaryContainer
-                        }
-                    )
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            Button(
-                onClick = {
-                    if (isFirebaseAvailable) {
-                        try {
-                            com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                    clearLocalState()
-                    onLogout()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("로그아웃")
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedButton(
-                onClick = {
-                    if (!isFirebaseAvailable) {
-                        clearLocalState()
-                        onLogout()
-                        return@OutlinedButton
-                    }
-                    // 탈퇴는 서버(deleteAccount)가 Firestore 개인정보 삭제/익명화까지 처리한 뒤
-                    // Auth 계정을 삭제한다. 클라이언트 단독 Auth 삭제는 DB에 개인정보를 남긴다.
-                    coroutineScope.launch {
-                        isDeleting = true
-                        val result = try {
-                            org.json.JSONObject(com.example.repository.AiVisionRepository.deleteAccount())
-                        } catch (e: Exception) {
-                            org.json.JSONObject().put("error", "탈퇴 처리 중 오류가 발생했습니다.")
-                        }
-                        isDeleting = false
-                        if (result.has("error")) {
-                            message = "회원 탈퇴 실패: ${result.getString("error")}"
-                        } else {
-                            try {
-                                com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                            clearLocalState()
-                            onLogout()
-                        }
-                    }
-                },
-                enabled = !isDeleting,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
-            ) {
-                Text(if (isDeleting) "탈퇴 처리 중..." else "회원 탈퇴 (DB 정보 삭제)")
-            }
-        }
-    }
+        }) { Text("탈퇴") } }, dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text("취소") } })
 }

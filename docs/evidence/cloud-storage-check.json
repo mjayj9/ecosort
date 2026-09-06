@@ -1,0 +1,12 @@
+{
+  "appScanStored": true,
+  "storedFields": [
+    "confidence",
+    "createdAt",
+    "decision",
+    "model",
+    "uid"
+  ],
+  "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+  "decision": "RECYCLE"
+}

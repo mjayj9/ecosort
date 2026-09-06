@@ -3,10 +3,8 @@ plugins {
   alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.google.devtools.ksp)
   alias(libs.plugins.roborazzi)
-  alias(libs.plugins.secrets)
   alias(libs.plugins.google.services)
 }
-
 android {
   namespace = "com.example"
   compileSdk { version = release(36) { minorApiLevel = 1 } }
@@ -42,6 +40,7 @@ android {
 
   buildTypes {
     release {
+      buildConfigField("boolean", "USE_FIREBASE_EMULATORS", "false")
       isCrunchPngs = false
       // R8 난독화/축소 활성화: 클라이언트 로직/문자열 노출 최소화
       isMinifyEnabled = true
@@ -54,6 +53,9 @@ android {
       }
     }
     debug {
+      val localEmulators = providers.gradleProperty("ecoLocal").orNull == "true"
+      buildConfigField("boolean", "USE_FIREBASE_EMULATORS", localEmulators.toString())
+      if (localEmulators) applicationIdSuffix = ".local"
       val debugKeystoreFile = file("${rootDir}/debug.keystore")
       if (debugKeystoreFile.exists()) {
         signingConfig = signingConfigs.getByName("debugConfig")
@@ -69,13 +71,6 @@ android {
     buildConfig = true
   }
   testOptions { unitTests { isIncludeAndroidResources = true } }
-}
-
-// Configure the Secrets Gradle Plugin to use .env and .env.example files
-// to match the convention used in Web projects.
-secrets {
-  propertiesFileName = ".env"
-  defaultPropertiesFileName = ".env.example"
 }
 
 // Some unused dependencies are commented out below instead of being removed.
@@ -106,8 +101,10 @@ dependencies {
   implementation(libs.coil.compose)
   implementation(libs.firebase.auth)
   implementation(libs.firebase.firestore)
-  // AI 분석/포인트/쿠폰/탈퇴는 전부 Cloud Functions 경유 (Gemini 직접 호출 금지)
+  // AI 분석/포인트/쿠폰/탈퇴는 전부 Cloud Functions 경유 (AI 공급자 직접 호출 금지)
   implementation(libs.firebase.functions)
+  implementation("com.google.firebase:firebase-appcheck-playintegrity")
+  debugImplementation("com.google.firebase:firebase-appcheck-debug")
   implementation(libs.play.services.auth)
   implementation(libs.kotlinx.coroutines.android)
   implementation(libs.kotlinx.coroutines.core)
@@ -130,4 +127,9 @@ dependencies {
   debugImplementation(libs.androidx.compose.ui.test.manifest)
   debugImplementation(libs.androidx.compose.ui.tooling)
   "ksp"(libs.androidx.room.compiler)
+}
+
+// Local demo initializes an isolated demo FirebaseApp in code.
+if (providers.gradleProperty("ecoLocal").orNull == "true") {
+  tasks.matching { it.name == "processDebugGoogleServices" }.configureEach { enabled = false }
 }

@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-06",
+  "androidLocalBuild": "passed",
+  "androidNormalDebugBuild": "passed",
+  "androidReleaseBuild": "passed (unsigned)",
+  "androidTests": {
+    "passed": 12,
+    "failed": 0
+  },
+  "serverUnitTests": {
+    "passed": 64,
+    "failed": 0
+  },
+  "callableHttpScenarios": 6,
+  "firestoreIntegrationChecks": 8,
+  "lint": "passed",
+  "secretPatternScan": {
+    "working_tree": [],
+    "git_history": [],
+    "apk": [],
+    "scanned_history_blobs": 133,
+    "note": "Final source/APK pattern scan; unchanged Git history uses the earlier 133-blob scan. Public Firebase client configuration is not a server secret."
+  },
+  "liveNimInference": "FAILED: 5 real HTTP image requests timed out (65–106 seconds); no successful inference",
+  "localApkSha256": "e86dcf5f96c9a31bf9fb6afb6ec826aff0515c82aa30d5b1a1b4f144468bb9ff",
+  "localPackage": "com.aistudio.ecosort.kxmpzq.local",
+  "deploymentsPerformed": false,
+  "note": "Test stubs are confined to tests. Real provider requests timed out; no real AI success claimed.",
+  "finalLocalApkInstalled": true,
+  "androidLiveTimeoutUi": "Observed after local reauthentication; no inference result"
+}

@@ -1,0 +1,24 @@
+const path=require('node:path');
+const base=path.join(process.env.APPDATA,'npm/node_modules/firebase-tools');
+const serial=process.argv[2]||'emulator-5554';
+const {execFileSync}=require('node:child_process');
+const fs=require('node:fs');
+(async()=>{
+ const adb=path.join(process.env.LOCALAPPDATA,'Android/Sdk/platform-tools/adb.exe');
+ const args=['-s',serial,'shell','run-as','com.aistudio.ecosort.kxmpzq'];
+ const names=execFileSync(adb,[...args,'ls','shared_prefs'],{encoding:'utf8',windowsHide:true}).trim().split('\n');
+ const file=names.find(x=>x.startsWith('com.google.firebase.appcheck.debug.store.'))?.trim();
+ if(!file||!/^[-A-Za-z0-9_.+]+$/.test(file))throw new Error('No device token generated');
+ const content=execFileSync(adb,[...args,'cat',`shared_prefs/${file}`],{encoding:'utf8',windowsHide:true});
+ const token=content.match(/>[a-f0-9]{8}-[a-f0-9-]{27}</i)?.[0].slice(1,-1);
+ if(!token)throw new Error('No device token generated');
+ const project='focused-rig-vcf5x';
+ await require(base).apps.list({project,nonInteractive:true});
+ const {Client}=require(base+'/lib/apiv2');
+ const c=new Client({urlPrefix:'https://firebaseappcheck.googleapis.com',apiVersion:'v1'});
+ const app='projects/595387634191/apps/1:595387634191:android:cf090ce31cfffacb81c97a';
+ await c.patch(`${app}/playIntegrityConfig`,{name:`${app}/playIntegrityConfig`,tokenTtl:'3600s'},{queryParams:{updateMask:'tokenTtl'},skipLog:{body:true,resBody:true}});
+ const r=await c.post(`${app}/debugTokens`,{displayName:`EcoSort demo ${serial} ${new Date().toISOString().slice(0,10)}`,token},{skipLog:{body:true,resBody:true}});
+ const summary={registered:true,device:serial};
+ console.log(JSON.stringify(summary));
+})().catch(error=>{console.error(JSON.stringify({registered:false,status:error.status||error.original?.status||null,kind:error.name,message:error.message==='No device token generated'?error.message:'App Check registration failed'}));process.exitCode=1;});

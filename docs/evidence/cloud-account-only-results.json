@@ -1,0 +1,24 @@
+{
+  "verifiedAt": "2026-09-06T13:51:34.002Z",
+  "project": "focused-rig-vcf5x",
+  "results": [
+    {
+      "name": "delete-missing-app-check",
+      "httpStatus": 401,
+      "elapsedMs": 292,
+      "error": {
+        "message": "Unauthenticated",
+        "status": "UNAUTHENTICATED"
+      }
+    },
+    {
+      "name": "delete-missing-auth",
+      "httpStatus": 401,
+      "elapsedMs": 270,
+      "error": {
+        "message": "로그인이 필요합니다. 다시 로그인해 주세요.",
+        "status": "UNAUTHENTICATED"
+      }
+    }
+  ]
+}
