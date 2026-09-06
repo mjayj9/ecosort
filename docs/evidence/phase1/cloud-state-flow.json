@@ -1,0 +1,683 @@
+{
+  "startedAt": "2026-09-06T15:53:56.967Z",
+  "environment": "cloud",
+  "realNim": true,
+  "accuracyBenchmark": false,
+  "userAnswersAreTestInputs": true,
+  "scenarios": [
+    {
+      "name": "missing-login",
+      "httpStatus": 401,
+      "elapsedMs": 520,
+      "error": {
+        "message": "로그인이 필요합니다. 다시 로그인해 주세요.",
+        "status": "UNAUTHENTICATED"
+      }
+    },
+    {
+      "name": "missing-app-check",
+      "httpStatus": 401,
+      "elapsedMs": 295,
+      "error": {
+        "message": "Unauthenticated",
+        "status": "UNAUTHENTICATED"
+      }
+    },
+    {
+      "name": "legacy-client-upgrade",
+      "httpStatus": 400,
+      "elapsedMs": 196,
+      "error": {
+        "message": "상태 확인 기능이 추가되었습니다. 최신 EcoSort 앱으로 업데이트해 주세요.",
+        "status": "FAILED_PRECONDITION"
+      }
+    },
+    {
+      "name": "invalid-photo",
+      "httpStatus": 400,
+      "elapsedMs": 199,
+      "error": {
+        "message": "사진 형식이나 크기를 확인해 주세요. JPEG 사진을 다시 선택해 주세요.",
+        "status": "INVALID_ARGUMENT"
+      }
+    },
+    {
+      "name": "client-model-rejected",
+      "httpStatus": 400,
+      "elapsedMs": 199,
+      "error": {
+        "message": "앱에서 서버 키·모델·판정을 지정할 수 없습니다.",
+        "status": "INVALID_ARGUMENT"
+      }
+    },
+    {
+      "name": "single-bottle-real-nim",
+      "httpStatus": 200,
+      "elapsedMs": 69713,
+      "result": {
+        "schemaVersion": 2,
+        "status": "NEEDS_CONFIRMATION",
+        "title": "상태를 조금 더 확인해 주세요",
+        "itemName": "음료용 페트병",
+        "materialLabel": "세부 재질 확인 전",
+        "decision": null,
+        "contaminationScore": null,
+        "guideScope": "COMMON_PREPARATION",
+        "ruleVersion": "2026-09-07.1",
+        "ruleId": null,
+        "summary": "사진만으로 확인하지 못한 정보가 있어요. 직접 확인할 수 없다면 모르겠음을 선택하세요.",
+        "evidence": [
+          {
+            "label": "사용 목적",
+            "value": "지금 배출하려는 물품",
+            "source": "USER"
+          },
+          {
+            "label": "사용 상태",
+            "value": "사용한 물품",
+            "source": "USER"
+          },
+          {
+            "label": "물품 종류",
+            "value": "음료용 페트병",
+            "source": "AI"
+          },
+          {
+            "label": "사진의 내부 관찰",
+            "value": "사진에서 내부를 확인할 수 없어요",
+            "source": "AI"
+          }
+        ],
+        "limits": [
+          "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요.",
+          "사진의 미개봉 추정과 사용자 답변이 달라, 사용한 물품이라는 확인을 우선했어요. 닫힌 뚜껑만으로 미개봉을 확정하지 않습니다. 내용물과 잔여물은 별도로 확인합니다."
+        ],
+        "questions": [
+          {
+            "key": "contents",
+            "title": "내용물을 비웠나요?",
+            "choices": [
+              {
+                "value": "PRESENT",
+                "label": "내용물이 남아 있어요"
+              },
+              {
+                "value": "EMPTY",
+                "label": "내용물을 비웠어요"
+              },
+              {
+                "value": "UNKNOWN",
+                "label": "확인할 수 없어요"
+              }
+            ]
+          }
+        ],
+        "steps": [],
+        "sources": [],
+        "scanId": "5ba347f3af87cc2cf5dd0c8bff30598c65fa2fc0",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+        "revision": 0
+      }
+    },
+    {
+      "name": "duplicate-analysis-cached",
+      "httpStatus": 200,
+      "elapsedMs": 727,
+      "result": {
+        "schemaVersion": 2,
+        "status": "NEEDS_CONFIRMATION",
+        "title": "상태를 조금 더 확인해 주세요",
+        "itemName": "음료용 페트병",
+        "materialLabel": "세부 재질 확인 전",
+        "decision": null,
+        "contaminationScore": null,
+        "guideScope": "COMMON_PREPARATION",
+        "ruleVersion": "2026-09-07.1",
+        "ruleId": null,
+        "summary": "사진만으로 확인하지 못한 정보가 있어요. 직접 확인할 수 없다면 모르겠음을 선택하세요.",
+        "evidence": [
+          {
+            "label": "사용 목적",
+            "value": "지금 배출하려는 물품",
+            "source": "USER"
+          },
+          {
+            "label": "사용 상태",
+            "value": "사용한 물품",
+            "source": "USER"
+          },
+          {
+            "label": "물품 종류",
+            "value": "음료용 페트병",
+            "source": "AI"
+          },
+          {
+            "label": "사진의 내부 관찰",
+            "value": "사진에서 내부를 확인할 수 없어요",
+            "source": "AI"
+          }
+        ],
+        "limits": [
+          "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요.",
+          "사진의 미개봉 추정과 사용자 답변이 달라, 사용한 물품이라는 확인을 우선했어요. 닫힌 뚜껑만으로 미개봉을 확정하지 않습니다. 내용물과 잔여물은 별도로 확인합니다."
+        ],
+        "questions": [
+          {
+            "key": "contents",
+            "title": "내용물을 비웠나요?",
+            "choices": [
+              {
+                "value": "PRESENT",
+                "label": "내용물이 남아 있어요"
+              },
+              {
+                "value": "EMPTY",
+                "label": "내용물을 비웠어요"
+              },
+              {
+                "value": "UNKNOWN",
+                "label": "확인할 수 없어요"
+              }
+            ]
+          }
+        ],
+        "steps": [],
+        "sources": [],
+        "scanId": "5ba347f3af87cc2cf5dd0c8bff30598c65fa2fc0",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+        "revision": 0
+      }
+    },
+    {
+      "name": "remaining-contents",
+      "httpStatus": 200,
+      "elapsedMs": 281,
+      "result": {
+        "schemaVersion": 2,
+        "status": "PREPARATION",
+        "title": "내용물 처리부터 확인해 주세요",
+        "itemName": "음료용 페트병",
+        "materialLabel": "세부 재질 확인 전",
+        "decision": null,
+        "contaminationScore": null,
+        "guideScope": "COMMON_PREPARATION",
+        "ruleVersion": "2026-09-07.1",
+        "ruleId": null,
+        "summary": "내용물이 남아 있는 용기는 바로 배출 가능으로 판정하지 않습니다. 내용물의 처리 방법을 거주지 안내에서 확인하고, 처리를 마친 뒤 내용물 상태를 수정해 주세요.",
+        "evidence": [
+          {
+            "label": "사용 목적",
+            "value": "지금 배출하려는 물품",
+            "source": "USER"
+          },
+          {
+            "label": "사용 상태",
+            "value": "사용한 물품",
+            "source": "USER"
+          },
+          {
+            "label": "물품 종류",
+            "value": "음료용 페트병",
+            "source": "AI"
+          },
+          {
+            "label": "사진의 내부 관찰",
+            "value": "사진에서 내부를 확인할 수 없어요",
+            "source": "AI"
+          },
+          {
+            "label": "내용물",
+            "value": "내용물이 남아 있어요",
+            "source": "USER"
+          }
+        ],
+        "limits": [
+          "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요.",
+          "사진의 미개봉 추정과 사용자 답변이 달라, 사용한 물품이라는 확인을 우선했어요. 닫힌 뚜껑만으로 미개봉을 확정하지 않습니다. 내용물과 잔여물은 별도로 확인합니다."
+        ],
+        "questions": [],
+        "steps": [],
+        "sources": [],
+        "scanId": "5ba347f3af87cc2cf5dd0c8bff30598c65fa2fc0",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+        "revision": 1
+      }
+    },
+    {
+      "name": "duplicate-correction-cached",
+      "httpStatus": 200,
+      "elapsedMs": 302,
+      "result": {
+        "schemaVersion": 2,
+        "status": "PREPARATION",
+        "title": "내용물 처리부터 확인해 주세요",
+        "itemName": "음료용 페트병",
+        "materialLabel": "세부 재질 확인 전",
+        "decision": null,
+        "contaminationScore": null,
+        "guideScope": "COMMON_PREPARATION",
+        "ruleVersion": "2026-09-07.1",
+        "ruleId": null,
+        "summary": "내용물이 남아 있는 용기는 바로 배출 가능으로 판정하지 않습니다. 내용물의 처리 방법을 거주지 안내에서 확인하고, 처리를 마친 뒤 내용물 상태를 수정해 주세요.",
+        "evidence": [
+          {
+            "label": "사용 목적",
+            "value": "지금 배출하려는 물품",
+            "source": "USER"
+          },
+          {
+            "label": "사용 상태",
+            "value": "사용한 물품",
+            "source": "USER"
+          },
+          {
+            "label": "물품 종류",
+            "value": "음료용 페트병",
+            "source": "AI"
+          },
+          {
+            "label": "사진의 내부 관찰",
+            "value": "사진에서 내부를 확인할 수 없어요",
+            "source": "AI"
+          },
+          {
+            "label": "내용물",
+            "value": "내용물이 남아 있어요",
+            "source": "USER"
+          }
+        ],
+        "limits": [
+          "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요.",
+          "사진의 미개봉 추정과 사용자 답변이 달라, 사용한 물품이라는 확인을 우선했어요. 닫힌 뚜껑만으로 미개봉을 확정하지 않습니다. 내용물과 잔여물은 별도로 확인합니다."
+        ],
+        "questions": [],
+        "steps": [],
+        "sources": [],
+        "scanId": "5ba347f3af87cc2cf5dd0c8bff30598c65fa2fc0",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+        "revision": 1
+      }
+    },
+    {
+      "name": "stale-revision",
+      "httpStatus": 409,
+      "elapsedMs": 260,
+      "error": {
+        "message": "다른 상태 수정이 먼저 반영되었습니다. 현재 사진을 다시 분석해 주세요.",
+        "status": "ABORTED"
+      }
+    },
+    {
+      "name": "other-account-cannot-resolve",
+      "httpStatus": 404,
+      "elapsedMs": 255,
+      "error": {
+        "message": "이 계정의 분석 기록을 찾지 못했습니다. 사진을 다시 분석해 주세요.",
+        "status": "NOT_FOUND"
+      }
+    },
+    {
+      "name": "unused-preview-synthetic-user-correction",
+      "httpStatus": 200,
+      "elapsedMs": 332,
+      "result": {
+        "schemaVersion": 2,
+        "status": "PREVIEW",
+        "title": "사용 후 배출법 미리 보기",
+        "itemName": "음료용 페트병",
+        "materialLabel": "페트(PET) · 사용자 확인",
+        "decision": null,
+        "contaminationScore": null,
+        "guideScope": "COMMON_PREPARATION",
+        "ruleVersion": "2026-09-07.1",
+        "ruleId": "food-plastic-preparation",
+        "summary": "아래는 나중에 사용을 마치고 내용물을 비운 뒤 참고할 공통 준비 방법입니다. 현재 제품에 세척이 필요하다는 판정이 아닙니다.",
+        "evidence": [
+          {
+            "label": "사용 목적",
+            "value": "사용 후 배출법 미리 보기",
+            "source": "USER"
+          },
+          {
+            "label": "사용 상태",
+            "value": "미개봉·미사용",
+            "source": "USER"
+          },
+          {
+            "label": "물품 종류",
+            "value": "음료용 페트병",
+            "source": "AI"
+          },
+          {
+            "label": "내부 상태",
+            "value": "현재 내부의 오염 상태를 판단하지 않았어요",
+            "source": "LIMIT"
+          },
+          {
+            "label": "포장재 표시·종류",
+            "value": "페트(PET)",
+            "source": "USER"
+          }
+        ],
+        "limits": [
+          "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요."
+        ],
+        "questions": [],
+        "steps": [
+          "내용물을 비운 식품·음료 용기의 잔여물을 물로 헹궈 제거하세요.",
+          "쉽게 분리되는 라벨 등 다른 재질의 부속품을 확인하세요.",
+          "생수·음료용 무색 페트병과 다른 플라스틱은 수거 구분이 다를 수 있으므로 표시와 거주지 안내를 확인하세요."
+        ],
+        "sources": [
+          {
+            "title": "정책브리핑 · 품목별 분리배출 준비 방법 (2021)",
+            "url": "https://www.korea.kr/news/policyFocusView.do?newsId=148889163&pkgId=49500758"
+          }
+        ],
+        "scanId": "5ba347f3af87cc2cf5dd0c8bff30598c65fa2fc0",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+        "revision": 2
+      }
+    },
+    {
+      "name": "unused-dispose-synthetic-user-correction",
+      "httpStatus": 200,
+      "elapsedMs": 321,
+      "result": {
+        "schemaVersion": 2,
+        "status": "PREPARATION",
+        "title": "미개봉·미사용 제품의 배출 준비",
+        "itemName": "음료용 페트병",
+        "materialLabel": "세부 재질 확인 전",
+        "decision": null,
+        "contaminationScore": null,
+        "guideScope": "COMMON_PREPARATION",
+        "ruleVersion": "2026-09-07.1",
+        "ruleId": null,
+        "summary": "사용하지 않은 제품을 빈 용기로 판정하지 않았어요. 지금 배출해야 한다면 내용물과 포장재의 처리 방법을 먼저 확인하세요. 음식물·액체의 처리 방법은 거주지 안내에 따르고, 분석을 위해 제품을 뜯지 마세요.",
+        "evidence": [
+          {
+            "label": "사용 목적",
+            "value": "지금 배출하려는 물품",
+            "source": "USER"
+          },
+          {
+            "label": "사용 상태",
+            "value": "미개봉·미사용",
+            "source": "USER"
+          },
+          {
+            "label": "물품 종류",
+            "value": "음료용 페트병",
+            "source": "AI"
+          },
+          {
+            "label": "내부 상태",
+            "value": "현재 내부의 오염 상태를 판단하지 않았어요",
+            "source": "LIMIT"
+          }
+        ],
+        "limits": [
+          "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요."
+        ],
+        "questions": [],
+        "steps": [],
+        "sources": [],
+        "scanId": "5ba347f3af87cc2cf5dd0c8bff30598c65fa2fc0",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+        "revision": 3
+      }
+    },
+    {
+      "name": "unknown-contents-no-repeat",
+      "httpStatus": 200,
+      "elapsedMs": 303,
+      "result": {
+        "schemaVersion": 2,
+        "status": "HOLD",
+        "title": "내용물 상태를 확인하지 못했어요",
+        "itemName": "음료용 페트병",
+        "materialLabel": "세부 재질 확인 전",
+        "decision": null,
+        "contaminationScore": null,
+        "guideScope": "COMMON_PREPARATION",
+        "ruleVersion": "2026-09-07.1",
+        "ruleId": null,
+        "summary": "내용물이 비었다고 가정하지 않았어요. 안전하게 확인할 수 있을 때 상태 답변을 수정해 주세요. 같은 질문을 반복하지 않습니다.",
+        "evidence": [
+          {
+            "label": "사용 목적",
+            "value": "지금 배출하려는 물품",
+            "source": "USER"
+          },
+          {
+            "label": "사용 상태",
+            "value": "사용한 물품",
+            "source": "USER"
+          },
+          {
+            "label": "물품 종류",
+            "value": "음료용 페트병",
+            "source": "AI"
+          },
+          {
+            "label": "사진의 내부 관찰",
+            "value": "사진에서 내부를 확인할 수 없어요",
+            "source": "AI"
+          },
+          {
+            "label": "내용물",
+            "value": "확인할 수 없어요",
+            "source": "USER"
+          }
+        ],
+        "limits": [
+          "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요.",
+          "사진의 미개봉 추정과 사용자 답변이 달라, 사용한 물품이라는 확인을 우선했어요. 닫힌 뚜껑만으로 미개봉을 확정하지 않습니다. 내용물과 잔여물은 별도로 확인합니다."
+        ],
+        "questions": [],
+        "steps": [],
+        "sources": [],
+        "scanId": "5ba347f3af87cc2cf5dd0c8bff30598c65fa2fc0",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+        "revision": 4
+      }
+    },
+    {
+      "name": "unknown-residue-no-repeat",
+      "httpStatus": 200,
+      "elapsedMs": 286,
+      "result": {
+        "schemaVersion": 2,
+        "status": "HOLD",
+        "title": "잔여물 상태를 확인하지 못했어요",
+        "itemName": "음료용 페트병",
+        "materialLabel": "세부 재질 확인 전",
+        "decision": null,
+        "contaminationScore": null,
+        "guideScope": "COMMON_PREPARATION",
+        "ruleVersion": "2026-09-07.1",
+        "ruleId": null,
+        "summary": "사진에서 보이지 않는 부분을 깨끗하다고 판단하지 않았어요. 안전하게 볼 수 있는 범위를 확인하거나, 확인 가능한 면을 촬영해 주세요. 억지로 열거나 손을 넣지 마세요.",
+        "evidence": [
+          {
+            "label": "사용 목적",
+            "value": "지금 배출하려는 물품",
+            "source": "USER"
+          },
+          {
+            "label": "사용 상태",
+            "value": "사용한 물품",
+            "source": "USER"
+          },
+          {
+            "label": "물품 종류",
+            "value": "음료용 페트병",
+            "source": "AI"
+          },
+          {
+            "label": "사진의 내부 관찰",
+            "value": "사진에서 내부를 확인할 수 없어요",
+            "source": "AI"
+          },
+          {
+            "label": "내용물",
+            "value": "내용물을 비웠어요",
+            "source": "USER"
+          },
+          {
+            "label": "잔여물",
+            "value": "확인할 수 없어요",
+            "source": "USER"
+          }
+        ],
+        "limits": [
+          "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요.",
+          "사진의 미개봉 추정과 사용자 답변이 달라, 사용한 물품이라는 확인을 우선했어요. 닫힌 뚜껑만으로 미개봉을 확정하지 않습니다. 내용물과 잔여물은 별도로 확인합니다."
+        ],
+        "questions": [],
+        "steps": [],
+        "sources": [],
+        "scanId": "5ba347f3af87cc2cf5dd0c8bff30598c65fa2fc0",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+        "revision": 5
+      }
+    },
+    {
+      "name": "residue-preparation-synthetic-confirmation",
+      "httpStatus": 200,
+      "elapsedMs": 304,
+      "result": {
+        "schemaVersion": 2,
+        "status": "PREPARATION",
+        "title": "잔여물 제거 후 다시 확인해 주세요",
+        "itemName": "음료용 페트병",
+        "materialLabel": "페트(PET) · 사용자 확인",
+        "decision": null,
+        "contaminationScore": null,
+        "guideScope": "COMMON_PREPARATION",
+        "ruleVersion": "2026-09-07.1",
+        "ruleId": "food-plastic-preparation",
+        "summary": "확인한 포장재의 일반적인 세척 준비 방법입니다. 세척 후에도 잔여물이 남으면 배출 가능으로 판단하지 말고 해당 품목의 지역 안내를 확인하세요.",
+        "evidence": [
+          {
+            "label": "사용 목적",
+            "value": "지금 배출하려는 물품",
+            "source": "USER"
+          },
+          {
+            "label": "사용 상태",
+            "value": "사용한 물품",
+            "source": "USER"
+          },
+          {
+            "label": "물품 종류",
+            "value": "음료용 페트병",
+            "source": "AI"
+          },
+          {
+            "label": "사진의 내부 관찰",
+            "value": "사진에서 내부를 확인할 수 없어요",
+            "source": "AI"
+          },
+          {
+            "label": "내용물",
+            "value": "내용물을 비웠어요",
+            "source": "USER"
+          },
+          {
+            "label": "잔여물",
+            "value": "눈에 보이는 잔여물이 있어요",
+            "source": "USER"
+          },
+          {
+            "label": "포장재 표시·종류",
+            "value": "페트(PET)",
+            "source": "USER"
+          }
+        ],
+        "limits": [
+          "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요.",
+          "사진의 미개봉 추정과 사용자 답변이 달라, 사용한 물품이라는 확인을 우선했어요. 닫힌 뚜껑만으로 미개봉을 확정하지 않습니다. 내용물과 잔여물은 별도로 확인합니다."
+        ],
+        "questions": [],
+        "steps": [
+          "내용물을 비운 식품·음료 용기의 잔여물을 물로 헹궈 제거하세요.",
+          "쉽게 분리되는 라벨 등 다른 재질의 부속품을 확인하세요.",
+          "생수·음료용 무색 페트병과 다른 플라스틱은 수거 구분이 다를 수 있으므로 표시와 거주지 안내를 확인하세요."
+        ],
+        "sources": [
+          {
+            "title": "정책브리핑 · 품목별 분리배출 준비 방법 (2021)",
+            "url": "https://www.korea.kr/news/policyFocusView.do?newsId=148889163&pkgId=49500758"
+          }
+        ],
+        "scanId": "5ba347f3af87cc2cf5dd0c8bff30598c65fa2fc0",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+        "revision": 6
+      }
+    },
+    {
+      "name": "extra-photo-EcoSort-test-blank.jpg",
+      "httpStatus": 200,
+      "elapsedMs": 16397,
+      "result": {
+        "schemaVersion": 2,
+        "status": "NEEDS_PHOTO",
+        "title": "물품을 다시 보여 주세요",
+        "itemName": "물품 확인 불가",
+        "materialLabel": "세부 재질 확인 전",
+        "decision": null,
+        "contaminationScore": null,
+        "guideScope": "COMMON_PREPARATION",
+        "ruleVersion": "2026-09-07.1",
+        "ruleId": null,
+        "summary": "분석할 물품을 찾지 못했어요. 물품 한 개를 화면 중앙에 보여 주세요.",
+        "evidence": [
+          {
+            "label": "사용 목적",
+            "value": "지금 배출하려는 물품",
+            "source": "USER"
+          },
+          {
+            "label": "사용 상태",
+            "value": "사용한 물품",
+            "source": "USER"
+          },
+          {
+            "label": "물품 종류",
+            "value": "물품 확인 불가",
+            "source": "AI"
+          },
+          {
+            "label": "사진의 내부 관찰",
+            "value": "사진에서 내부를 확인할 수 없어요",
+            "source": "AI"
+          }
+        ],
+        "limits": [
+          "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요."
+        ],
+        "questions": [],
+        "steps": [],
+        "sources": [],
+        "scanId": "8fb019822ec4fa1baa35c33d66f49c7f98006ed4",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+        "revision": 0
+      }
+    }
+  ],
+  "cleanup": [
+    {
+      "httpStatus": 200,
+      "success": true
+    },
+    {
+      "httpStatus": 200,
+      "success": true
+    }
+  ],
+  "singleImageScanId": "5ba347f3af87cc2cf5dd0c8bff30598c65fa2fc0",
+  "workflowPassed": true,
+  "finishedAt": "2026-09-06T15:55:31.958Z"
+}

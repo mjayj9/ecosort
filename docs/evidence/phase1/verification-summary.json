@@ -1,0 +1,87 @@
+{
+  "dateKst": "2026-09-07",
+  "schemaVersion": 2,
+  "ruleVersion": "2026-09-07.1",
+  "android": {
+    "versionName": "1.2",
+    "versionCode": 3,
+    "debugBuild": "passed",
+    "releaseBuild": "passed unsigned R8/lintVital",
+    "junit": {
+      "tests": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "serverUnit": {
+    "tests": 98,
+    "pass": 98,
+    "fail": 0
+  },
+  "firestoreStateIntegration": {
+    "checks": 11,
+    "passed": true,
+    "realFirestoreEmulator": true,
+    "realNim": false
+  },
+  "existingLocalRegression": {
+    "checks": 8,
+    "passed": true
+  },
+  "cloud": {
+    "realNim": true,
+    "workflowPassed": true,
+    "scenarios": 17,
+    "cleanup": [
+      {
+        "httpStatus": 200,
+        "success": true
+      },
+      {
+        "httpStatus": 200,
+        "success": true
+      }
+    ],
+    "singlePhotoMs": 69713,
+    "accuracyBenchmark": false,
+    "userAnswersAreTestInputs": true
+  },
+  "device": {
+    "serial": "emulator-5554",
+    "photoSelection": true,
+    "firstPhotoRequestedRetake": true,
+    "manualReanalysisReachedContentsQuestion": true,
+    "offlineStatePreserved": true,
+    "recoveryReachedPreparation": true,
+    "newPhotoReset": true,
+    "physicalCameraTestedThisVersion": false
+  },
+  "secretAudit": {
+    "working_tree": [],
+    "git_history": [],
+    "apk": [],
+    "scanned_history_blobs": 231,
+    "note": "Pattern scan only; Only exact Firebase client API identifiers from google-services.json are excluded in APK entries. These are public configuration. No secret values are emitted."
+  },
+  "apkSha256": "90bd792d3845a64d4133f0f8478f05da569e38ba73a3f12513463a14bdcbc96c",
+  "testPhoto": {
+    "file": "commons-empty-bottle.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Empty_Plastic_Bottle.jpg",
+    "author": "Echendu Tracy",
+    "license": "CC0 1.0",
+    "photoDate": "2025-11-27",
+    "size": [
+      960,
+      720
+    ],
+    "sha256": "6ec639c03b4dd88d2be00ac24d2196c70a4822c4d7a9da0820dbddaf2905b097"
+  },
+  "limits": [
+    "No original unopened soy carton photo available",
+    "No measured accuracy",
+    "No realtime or custom trained model",
+    "No local collection acceptance certification",
+    "Play Store unchanged"
+  ]
+}

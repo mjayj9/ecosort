@@ -53,7 +53,7 @@ function decide(observation, inputAnswers) {
     return withRule("PREVIEW", "사용 후 배출법 미리 보기", "아래는 나중에 사용을 마치고 내용물을 비운 뒤 참고할 공통 준비 방법입니다. 현재 제품에 세척이 필요하다는 판정이 아닙니다.");
   }
   if (a.useState === "UNUSED") return finish("PREPARATION", "미개봉·미사용 제품의 배출 준비", "사용하지 않은 제품을 빈 용기로 판정하지 않았어요. 지금 배출해야 한다면 내용물과 포장재의 처리 방법을 먼저 확인하세요. 음식물·액체의 처리 방법은 거주지 안내에 따르고, 분석을 위해 제품을 뜯지 마세요.");
-  if (o.opening === "SEALED") return finish("HOLD", "개봉 상태를 다시 확인해 주세요", "사용한 물품이라는 답변과 사진의 미개봉 추정이 달라 판단을 보류했어요. 현재 상태를 확인하거나 개봉부가 보이는 사진을 선택해 주세요.");
+  if (o.opening === "SEALED") result.limits.push("사진의 미개봉 추정과 사용자 답변이 달라, 사용한 물품이라는 확인을 우선했어요. 닫힌 뚜껑만으로 미개봉을 확정하지 않습니다. 내용물과 잔여물은 별도로 확인합니다.");
 
   if (o.subject !== "PAPER_BOX") {
     if (!a.contents) return ask("contents");

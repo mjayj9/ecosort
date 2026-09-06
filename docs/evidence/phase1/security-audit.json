@@ -1,0 +1,7 @@
+{
+  "working_tree": [],
+  "git_history": [],
+  "apk": [],
+  "scanned_history_blobs": 231,
+  "note": "Pattern scan only; Only exact Firebase client API identifiers from google-services.json are excluded in APK entries. These are public configuration. No secret values are emitted."
+}

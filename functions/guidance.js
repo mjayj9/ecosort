@@ -1,6 +1,6 @@
 "use strict";
 
-const RULE_VERSION = "2026-09-06.1";
+const RULE_VERSION = "2026-09-07.1";
 const LOCAL_NOTICE = "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요.";
 const SOURCES = Object.freeze({
   preparation: { title: "정책브리핑 · 품목별 분리배출 준비 방법 (2021)", url: "https://www.korea.kr/news/policyFocusView.do?newsId=148889163&pkgId=49500758" },

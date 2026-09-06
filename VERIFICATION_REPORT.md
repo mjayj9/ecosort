@@ -1,58 +1,71 @@
-# EcoSort 검증 기록 · 2026-09-06
+# EcoSort 1단계 검증 기록
+
+검증일: 2026-09-06~07(KST). Android 1.2 / V2 계약 / 최종 규칙 2026-09-07.1.
 
 ## 직접 확인한 결과
 
 | 검사 | 결과와 범위 |
 |---|---|
-| 실제 핵심 경로 | Android 사진 선택 → 실제 Firebase Auth/App Check → 클라우드 Callable → NVIDIA NIM → 결과 표시 성공 |
-| 실제 모델 | Nemotron 3 Nano Omni. 사용자 승인으로 변경. Kimi K3는 반복 시간 초과로 성공 미확인 |
-| 클라우드 사진 3종 | 최종 서버에서 RECYCLE 25,847ms / GENERAL_WASTE 27,084ms / 빈 사진 UNKNOWN 13,339ms. 모두 HTTP 200, 모델·scanId·9개 필드 검증 |
-| 클라우드 보호 4종 | App Check 누락/로그인 누락 401, 잘못된 JPEG/클라이언트 모델 지정 400 |
-| 실제 앱 결과 | 정상 결과와 실제 모델명·기록 ID, 빈 사진 판단 보류·재촬영 화면 확인 |
-| Debug 빌드 | 성공, 클라우드 패키지 com.aistudio.ecosort.kxmpzq 설치 확인 |
-| Release 빌드 | R8 축소·lintVital 통과, unsigned APK. 설치·Play Store 업데이트하지 않음 |
-| Android 테스트 | 12/12 통과: 결과 계약 5, 이미지 2, Compose 결과 카드 2, 기존 3 |
-| 서버 테스트 | 71/71 통과: 계약·JSON·인증·상태별 오류·SSE·제한된 재시도·공통 마감 시간 |
-| 이전 로컬 통합 | Callable HTTP 6개, Firestore 8개 통과. Firestore 통합의 NIM 응답은 테스트 내 대체 |
-| 이전 실기 오류 | 카메라 촬영/복귀, 오프라인/복구, 키 미설정, 실제 K3 시간 초과와 같은 사진 재시도 확인 |
-| 저장 필드 | 실제 앱 scan 문서는 confidence, createdAt, decision, model, uid만 저장. 사진·키 비저장 확인 |
-| 비밀 패턴 검사 | 현재 작업 파일·Git blob 133개·클라우드 APK에서 NVIDIA/개인키 등 알려진 패턴 탐지 0. APK의 정확히 일치하는 Firebase 공개 클라이언트 식별자만 제외 |
-| 실제 경로 Mock | AiVisionRepository/Scanner/index/analysis에 고정 성공 판독 없음. NIM URL은 서버 파일에만 존재 |
-| diff 검사 | 에이전트 수정 파일의 git diff --check 통과. 기존 사용자 gradle.properties·Firebase 첨부 파일은 그대로 보존 |
-| 계정 삭제 | 실제 탈퇴 HTTP 200·success=true, 탈퇴 후 계정 조회 HTTP 400. Auth/App Check 누락은 각각 401로 차단. 전용 실행 계정 확인 |
+| Debug | 빌드 성공, 현재 APK 설치·실행, versionCode 3/versionName 1.2 확인 |
+| Release | assembleRelease 성공, R8와 lintVital 통과. unsigned APK이며 Play Store 미배포 |
+| Android | JUnit/Compose 21개, 실패·오류·건너뜀 0. 상태·세션·파서·이미지·화면·기존 테스트 |
+| 서버 | 최종 98개 모두 통과. 상태·JSON·응답 형식·인증·SSE·타임아웃·사용량 제한·중복·오류 분기 |
+| 실제 로컬 Firestore | 상태 서비스 11개 검사 통과: 중복, 소유권, 만료, 동시 수정, 실패 후 재시도 등. 이 검사에서 모델 응답은 테스트 입력 |
+| 기존 로컬 회귀 | 프로필/포인트 쓰기 차단, 타인 접근 차단, 동시 일일 한도, 저장 제한, 무재고 교환, 계정 탈퇴 등 8개 통과 |
+| 실제 로컬 NIM | 공개 단일 병 사진 약 40,657ms 후 내용물 질문. 답변 수정 34~68ms. 테스트 계정 2개 삭제 200 |
+| 실제 클라우드 NIM | 최종 스크립트 시나리오 17개 통과. 실제 병 69,713ms → 내용물 질문, 빈 사진 16,397ms → 재촬영 |
+| 클라우드 상태 수정 | 내용물 남음 → 준비, 미사용 미리 보기 → PREVIEW, 모름 → HOLD, 잔여물 있음 → 준비. 수정 281~332ms. 이 답변들은 분기 검증용 입력 |
+| 클라우드 보호 | 로그인/App Check 누락 401, 잘못된 이미지/모델 지정/구버전 거부, 타인 기록 404, 오래된 revision 409, 재시도 캐시 확인 |
+| 클라우드 계정 정리 | 최종 스크립트의 본인 테스트 계정 2개 모두 HTTP 200/success=true |
+| 실제 앱 | 사진 선택 → 실제 익명 Auth/App Check → NIM → 내용물 질문 → 답변 갱신 → 준비 안내, 실제 모델/기록 표시 |
+| 오프라인 앱 | Wi-Fi 차단 → 사진·답변 유지 오류, 복구 후 같은 답변으로 준비 안내 성공 |
+| 새 사진 | 이전 결과·상태 선택 초기화. UI XML에서 분석 버튼 비활성·재선택 필요 확인 |
+| 비밀 검사 | 작업 파일·Git blob 231개·새 APK의 알려진 비밀 패턴 탐지 0. 정확히 일치하는 공개 Firebase 클라이언트 식별자 제외 |
+| 실제 실행 경로 | Android는 Firebase만 호출. NIM URL은 서버. 기존 수치 결과 파서/카드 제거, 고정 성공 Mock 응답 경로 없음 |
+| Firebase 반영 | Node 22 analyzeImage/deleteAccount 갱신 성공. 실제 발견 오류 수정 후 analyzeImage 재배포 성공 |
 
-클라우드 핵심 시나리오 7개는 마지막 검증에서 외부 수동 재요청 없이 통과했다. 서버는 공급자 스트림 일시 오류에만 1회 재시도한다. 이전 호출에서는 공급자 error 이벤트 때문에 실패하거나 수동 재시도가 필요했으며 해당 실패도 기록했다. 모든 호출이 항상 성공한다고 주장하지 않는다.
+Android 코드는 ⑦ 빌드 이후 변경하지 않았다. ⑧의 서버 규칙 수정 후 전체 서버 98개를 다시 실행하고 최종 클라우드 왕복을 확인했다. 단위 테스트 수와 실제 사진 수를 합쳐 정확도로 표현하지 않는다. 전체 lintDebug를 다시 실행했다고 주장하지 않는다.
 
-## 원인과 수정
+## 실패를 통해 수정한 것
 
-1. 첨부 google-services (1).json은 프로젝트의 설정과 동일했다. 설정 파일만으로 서버가 생기는 것은 아니었다. Cloud Functions API 비활성, 분석 주소 404, 기본 Firestore DB 부재를 확인했다.
-2. 실제 익명 Auth, 별도 기본 DB(us-central1), 규칙, Functions와 NVIDIA Secret을 설정했다. 기존 이름 있는 DB 5개는 수정하지 않았다.
-3. 실제 NIM 연결에서 K3 반복 시간 초과를 재현했다. Python requests와 공식 예시 이미지로도 성공하지 못했다. 같은 키의 Nemotron 실제 응답을 검증해 사용자 승인으로 변경했다.
-4. NVIDIA의 HTTP 200 SSE에 error 이벤트가 섞이는 현상을 확인했다. 원문 없이 고정 진단 코드만 기록해 원인을 구분했다. 이 오류만 서버에서 최대 1회 재시도하며 105초 전체 마감 시간을 공유한다.
-5. 첫 Cloud Build의 소스 버킷 경합과 빌드 계정 권한 부족을 확인했다. 구체적 IAM 승인을 받고 빌드 역할을 보완하고 별도 ecosort-runtime 계정을 사용했다. 초기 빌드 계정에 붙었던 NVIDIA Secret 읽기 권한은 회수했다.
-6. Debug는 등록된 기기의 App Check debug provider, Release는 Play Integrity 소스로 분리했다. 앱에 비밀 디버그 토큰을 내장하지 않는다.
+1. **실제 닫힌 병을 미개봉으로 오인:** 첫 V2 클라우드 요청은 40,410ms에 HOLD를 반환했고 흐름 검증이 실패했다. 병뚜껑이 닫혔다는 AI 추정보다 사용자가 확인한 USED를 우선하도록 수정했다. 내용물·잔여물 질문, 위험·재질 검증은 유지한다. 회귀 테스트 2개를 추가했다. 최초 실패와 수정 후 성공 JSON을 함께 보존했다.
+2. **동일 사진 결과 변동:** 앱의 첫 사진 분석은 재촬영 요청이었다. 같은 사진을 사용자가 누르는 재분석 경로로 다시 호출한 뒤 내용물 질문이 나왔다. 첫 결과를 숨기거나 성공률을 계산하지 않았다. 공급자 관찰 품질·지연은 아직 일정하지 않다.
+3. **로컬 탈퇴의 SDK 호출 오류:** admin.firestore.FieldPath 접근 실패로 HTTP 500이 났다. firebase-admin/firestore의 FieldPath를 직접 사용하도록 고쳐 새 로컬 계정 탈퇴 200과 실제 클라우드 정리를 확인했다. 초기 실패 당시의 로컬 임시 계정 정리가 완전히 끝났는지는 확인하지 못했다. 임의의 다른 계정은 삭제하지 않았다.
 
-## 보안과 검증 한계
+전송하려던 추가 로컬 파일이 미확인이라는 자동 승인 차단이 한 번 있었다. 화면으로 개인정보 없는 회색 빈 이미지임을 확인한 뒤 해당 테스트만 재개했다. 테스트 사진이나 토큰을 다른 서비스에 업로드하는 우회는 사용하지 않았다.
 
-- NVIDIA 키는 사용자 숨김 입력 → 서버 프로세스 환경변수 → Firebase Secret으로 전달했고, 요청 본문/응답 본문 로그를 차단했다. 키 값은 코드·APK·Git·문서에 넣지 않았다. 패턴 검사는 모든 가능한 비밀 부재의 수학적 증명은 아니다.
-- **별도 보안 확인 사항:** Firebase Auth 설정 조회 중 hashConfig.signerKey가 도구 출력에 포함된 실수가 있었다. 해당 값을 파일·코드·APK에 복사하지 않았고 이후 조회는 필드 제한을 적용했다. NVIDIA 키 노출과는 별개다. 프로젝트 소유자는 대화 공유 범위를 확인하고 해당 Firebase Auth 설정의 대응 필요성을 확인해야 한다.
-- 실제 사진은 기존 프로젝트 자료 2장과 검증용 회색 빈 이미지다. 재질의 정답·사진 출처·권리와 배출 기준을 검증한 데이터셋이 아니다. 판독 결과의 정확성을 보장하지 않는다. 특히 접시 재질 등은 실제 표시를 확인해야 한다.
-- 실제로 세척 후 재활용해야 하는 용기의 WASH_THEN_RECYCLE 분기는 자동 테스트로 검증했으며, 정답을 아는 실물 사진으로 추가 확인이 필요하다.
-- Google 계정 로그인은 코드를 유지하고 공개 인증서 지문을 등록했으나 실제 계정 선택 성공은 미검증이다. 시연은 실제 Firebase 익명 로그인을 사용한다.
-- Release Play Integrity, 실제 휴대전화 카메라 환경, Play Console 출시/심사, 쿠폰 계약·매출·환경 성과는 확인하지 않았다.
-- 이전 전체 lintDebug는 오류 0/경고 58이었다. 이번 변경 뒤에는 Debug/Release 빌드와 unit/Compose 및 Release lintVital을 실행했다. 전체 lintDebug를 반복 실행한 것으로 주장하지 않는다.
-- 테스트 서버 Node 24와 배포 Node 22 차이가 있었다. 실제 배포 Node 22에서 사진 왕복을 검증했다.
-- Debug APK는 새 기기마다 App Check 등록이 필요하다. 현재 emulator-5554는 등록을 완료했다. 인터넷이 끊기면 AI 판독할 수 없다.
+## 증거 위치와 해석
 
-## 재현 자료
+- `docs/evidence/phase1/cloud-initial-failure.json`: 미개봉 오인으로 흐름 검사 실패, 원기록.
+- `docs/evidence/phase1/cloud-state-flow.json`: 최종 실제 클라우드 17개 시나리오와 본인 계정 정리.
+- `docs/evidence/phase1/local-state-flow.json`: 실제 로컬 NIM·상태 수정.
+- `docs/evidence/phase1/verification-summary.json`: 테스트 수·APK 해시·범위.
+- `docs/evidence/phase1/security-audit.json`: 패턴 검사 결과.
+- `docs/evidence/phase1/app-*.png`, `app-reset.json`: 실제 앱의 재촬영·질문·오프라인·준비·근거·초기화.
+- `functions/test`, `functions/scripts/check-state-service.js`, `functions/scripts/live-state-flow.js`, `app/src/test`: 재현 코드.
 
-- 자동 테스트: functions/test/, app/src/test/java/com/example/
-- 실제 클라우드: docs/evidence/cloud-live-results.json
-- 수정 전 공급자 실패: docs/evidence/cloud-initial-validation-failure.json
-- 화면: docs/evidence/app-cloud-result.png, app-cloud-model.png, app-cloud-unknown.png
-- DB 필드 확인: docs/evidence/cloud-storage-check.json
-- 실행·NVIDIA Secret 설정·모델 변경·발표: COMPETITION_UPDATE.md
-- 계정 삭제: docs/evidence/cloud-account-deletion.json, cloud-account-only-results.json.
-- 계정 삭제 함수의 HTTP 진입 권한은 사용자 별도 승인 후 설정했고, 내부 Auth/App Check/본인 uid 제한을 실제 검증했다.
+공개 실제 사진은 [Wikimedia Commons, Empty Plastic Bottle](https://commons.wikimedia.org/wiki/File:Empty_Plastic_Bottle.jpg), Echendu Tracy, 2025-11-27, CC0 1.0이다. 원본 공개 사진의 960px 썸네일을 사용했다. `commons-empty-bottle.jpg`는 테스트용 자료이며 앱의 판독 결과나 APK 리소스에 넣지 않았다. 이 사진의 재질·잔여물 정답을 독립 측정한 데이터셋은 아니다. 스크립트의 미사용/빈 상태/잔여물 답변은 **분기 검증용 입력**이며 사진 속 병의 실제 상태를 증명하지 않는다.
 
-현재 클라우드 APK SHA-256: A31CC47F982EA7AE2690527985AD861AC3B03B0145470CA58C5990AED17D9466.
+이전 `docs/evidence` 최상위의 수치 오염도/RECYCLE 결과와 스크린샷은 **1단계 이전 이력**이다. 현재 V2 결과의 증거로 인용하지 않는다. 현재 결과는 decision/contaminationScore가 null이고 확률을 앱에 표시하지 않는다. READY도 공통 준비 안내이며 최종 수거 가능 인증이 아니다.
+
+## 저장·인증 구조
+
+키는 Firebase Secret/서버 프로세스 환경변수에만 둔다. 사진은 실제 분석을 위해 서버와 NVIDIA로 전송되며 서버 DB에는 원본 사진·모델 원문·프롬프트·키를 저장하지 않는다. DB에는 정규화한 관찰, 사용자 답변, 규칙 결과, uid/요청 지문/시각/revision 등 재판정·중복 방지 메타데이터가 남는다. 스캔 문서는 클라이언트 직접 접근을 허용하지 않는다.
+
+재판정은 본인 기록만 허용하며 30분, 최대 20회 수정 제한이 있다. **30분은 재판정 유효기간이며 자동 DB 삭제 보장이 아니다.** 일일 AI 30회 제한과 실패 처리, 중복 요청 제어는 서버에서 수행한다. 본인 탈퇴는 기존 구조에 따라 관련 기록 익명화와 계정 삭제를 수행한다.
+
+Debug App Check는 등록된 개발 기기 전용이며 앱에 토큰을 내장하지 않는다. Release는 Play Integrity 소스를 사용하지만 실제 배포 검증이 남았다. 외부 HTTP 진입은 허용하되 callable 내부 Auth/App Check와 본인 uid 검증이 실행된다.
+
+별도 과거 보안 확인 사항: 초기 Firebase Auth 설정 조회 과정에서 hashConfig.signerKey가 도구 출력에 포함된 실수가 있었다. 해당 값을 파일·코드·APK에 복사하지 않았으며 NVIDIA 키 노출과는 별개다. 기존 보고의 이 확인 사항을 보존한다. 프로젝트 소유자는 해당 대화 공유 범위와 Firebase Auth 설정 대응 필요성을 확인해야 한다.
+
+## 남은 검증과 제한
+
+- 사용자의 원본 미개봉 두유 사진은 이번 작업에 없었다. 해당 반례는 규칙·상태 테스트로 검증했으며 실물 사진 재검증은 남았다.
+- 실제 휴대전화 카메라 촬영의 이번 버전 검증은 하지 않았다. 기존 카메라 코드를 유지했고 에뮬레이터에서는 사진 선택 경로를 검증했다.
+- 실제 정답 사진 평가, 지자체별 수거 DB, 위험물 안전성, 독자 모델 학습, 실시간 영상 인식은 완료하지 않았다.
+- 현재 NIM은 같은 사진에도 결과가 달라질 수 있으며 40~70초 이상 지연될 수 있다. 오프라인 AI는 제공하지 않는다.
+- Kimi K3 성공, Google 계정 선택 로그인, 실제 휴대전화 Release Play Integrity, Play Console 출시·심사는 미검증이다.
+- 포인트·쿠폰·단지 순위·광고·계약·매출·환경 성과는 구현/증빙 완료로 주장하지 않는다.
+- 비밀 패턴 검사와 테스트 통과는 모든 오류·취약점 부재를 증명하지 않는다.
+
+현재 Debug APK SHA-256: `90bd792d3845a64d4133f0f8478f05da569e38ba73a3f12513463a14bdcbc96c`.

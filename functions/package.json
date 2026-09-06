@@ -11,7 +11,9 @@
     "smoke:live": "node scripts/live-smoke.js",
     "test:emulator": "node scripts/emulator-check.js",
     "smoke:local": "node scripts/live-local.js",
-    "register:device": "node scripts/register-device.js"
+    "register:device": "node scripts/register-device.js",
+    "test:state-emulator": "node scripts/check-state-service.js",
+    "test:state-live": "node scripts/live-state-flow.js"
   },
   "engines": {
     "node": "22"

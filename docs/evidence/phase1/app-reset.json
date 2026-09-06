@@ -1,0 +1,72 @@
+{
+  "photoReselectionClearsResult": true,
+  "purposeAndUseStateRequiredAgain": true,
+  "analyzeButtonDisabled": true,
+  "source": "Observed Android UI XML after selecting photo again",
+  "buttonAncestorState": [
+    {
+      "class": "android.widget.TextView",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "class": "android.view.View",
+      "enabled": "false",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "class": "android.widget.ScrollView",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "class": "android.view.View",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "class": "android.view.View",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "class": "androidx.compose.ui.platform.ComposeView",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "class": "android.widget.FrameLayout",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "class": "android.widget.LinearLayout",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "class": "android.widget.FrameLayout",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {}
+  ]
+}

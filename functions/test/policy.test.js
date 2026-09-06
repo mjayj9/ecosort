@@ -56,3 +56,18 @@ test("user observation can support preparation but not turn a hidden interior in
   assert.match(r.evidence.find(x => x.label === "사진의 내부 관찰").value, /확인할 수 없/);
   assert.equal(r.evidence.find(x => x.label === "잔여물").source, "USER");
 });
+
+test("used capped bottle is not blocked by the model sealed guess", () => {
+  const r = decide({ ...photo, subject: "PET_BOTTLE", opening: "SEALED" }, { purpose: "DISPOSE_NOW", useState: "USED" });
+  assert.equal(r.status, "NEEDS_CONFIRMATION");
+  assert.equal(r.questions[0].key, "contents");
+  assert.equal(r.steps.length, 0);
+  assert.ok(r.limits.some(x => x.includes("닫힌 뚜껑")));
+  assert.equal(r.decision, null);
+});
+test("used capped bottle with unknown contents is still held", () => {
+  const r = decide({ ...photo, subject: "PET_BOTTLE", opening: "SEALED" }, { purpose: "DISPOSE_NOW", useState: "USED", contents: "UNKNOWN" });
+  assert.equal(r.status, "HOLD");
+  assert.equal(r.questions.length, 0);
+  assert.equal(r.steps.length, 0);
+});
