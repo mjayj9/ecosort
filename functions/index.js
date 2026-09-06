@@ -1,5 +1,8 @@
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { defineSecret, defineString } = require("firebase-functions/params");
+const { ContextError } = require("./context");
+const { analyzeObservation } = require("./observations");
+const { createScanService } = require("./scan-service");
 const admin = require("firebase-admin");
 const { FieldValue } = require("firebase-admin/firestore");
 const crypto = require("node:crypto");
@@ -37,6 +40,15 @@ async function enforceDailyLimit(uid) {
 // Local emulation reads only an inherited environment variable; no secret file is required.
 const localEmulator = process.env.FUNCTIONS_EMULATOR === "true";
 const runtimeOptions = localEmulator ? {} : { serviceAccount: "ecosort-runtime@focused-rig-vcf5x.iam.gserviceaccount.com" };
+const stateService = createScanService({
+  db, enforceDailyLimit, timestamp: () => FieldValue.serverTimestamp(),
+  getProvider: () => {
+    const model = validateModel(localEmulator ? (process.env.NVIDIA_MODEL || MODEL) : nvidiaModel.value());
+    const apiKey = localEmulator ? process.env.NVIDIA_API_KEY : nvidiaApiKey.value();
+    if (!apiKey?.trim()) throw new AnalysisError("failed-precondition", "AI 서버 키가 설정되지 않았습니다. 운영자에게 서버 설정을 요청해 주세요.");
+    return { model, analyze: image => analyzeObservation(image, { apiKey, model }) };
+  },
+});
 exports.analyzeImage = onCall({
   ...runtimeOptions,
   region: "us-central1", secrets: localEmulator ? [] : [nvidiaApiKey], timeoutSeconds: 150,
@@ -44,35 +56,13 @@ exports.analyzeImage = onCall({
   enforceAppCheck: !localEmulator,
 }, async request => {
   const uid = requireAuth(request);
-  let stage = "validate";
   try {
-    if (!request.data || Object.keys(request.data).some(key => key !== "image")) {
-      throw new AnalysisError("invalid-argument", "사진만 전송할 수 있습니다. 앱에서 서버 키를 전달할 수 없습니다.");
-    }
-    const image = validateImage(request.data.image);
-    const model = validateModel(localEmulator ? (process.env.NVIDIA_MODEL || MODEL) : nvidiaModel.value());
-    const apiKey = localEmulator ? process.env.NVIDIA_API_KEY : nvidiaApiKey.value();
-    if (!apiKey?.trim()) throw new AnalysisError("failed-precondition", "AI 서버 키가 설정되지 않았습니다. 운영자에게 서버 설정을 요청해 주세요.");
-    stage = "quota";
-    await enforceDailyLimit(uid);
-    stage = "provider";
-    const result = await analyzeWithNim(image, { apiKey, model });
-    stage = "record";
-    const scan = db.collection("scans").doc();
-    // No photo, base64 payload, prompt, raw output or key is persisted.
-    await scan.set({ uid, model, decision: result.decision, confidence: result.confidence,
-      createdAt: FieldValue.serverTimestamp() });
-    return { ...result, scanId: scan.id, model };
+    return await stateService.execute(uid, request.data);
   } catch (error) {
     if (error instanceof AnalysisError && error.check) console.warn(JSON.stringify({ event: "analysis-validation", check: error.check }));
-    if (error instanceof AnalysisError) throw new HttpsError(error.code, error.message,
-      localEmulator ? { ...(error.check ? { check: error.check } : {}), ...(["headers", "body"].includes(error.phase) ? { phase: error.phase } : {}) } : undefined);
+    if (error instanceof AnalysisError || error instanceof ContextError) throw new HttpsError(error.code, error.message);
     if (error instanceof HttpsError) throw error;
-    // Local diagnostics contain only a stage and a bounded status code, never error text or credentials.
-    const status = Number.isInteger(error?.code) ? error.code :
-      (/^app\/[a-z-]{1,40}$/.test(error?.code || "") ? error.code : "internal");
-    throw new HttpsError("unavailable", "분석 서버 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.",
-      localEmulator ? { stage, status, kind: ["TypeError", "RangeError", "ReferenceError", "FirebaseAppError"].includes(error?.name) ? error.name : "Error" } : undefined);
+    throw new HttpsError("unavailable", "분석 서버 처리에 실패했습니다. 잠시 후 같은 요청으로 다시 시도해 주세요.");
   }
 });
 

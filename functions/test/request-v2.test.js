@@ -1,0 +1,11 @@
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const crypto = require("node:crypto");
+const { validateRequest } = require("../scan-service");
+const valid = { schemaVersion: 2, operation: "analyze", requestId: crypto.randomUUID(), image: Buffer.from([255,216,255,217]).toString("base64"), answers: { purpose: "PREVIEW", useState: "UNUSED" } };
+test("legacy app receives an explicit upgrade error", () => assert.throws(() => validateRequest({ image: valid.image }), { code: "failed-precondition" }));
+for (const key of ["apiKey", "model", "decision", "observation", "unexpected"]) test("client injection rejected: " + key, () => assert.throws(() => validateRequest({ ...valid, [key]: "unit-test-placeholder" }), { code: "invalid-argument" }));
+test("state answers are required for a real analysis request", () => assert.throws(() => validateRequest({ ...valid, answers: {} }), { code: "invalid-argument" }));
+test("valid analysis preserves explicit unused intent", () => assert.equal(validateRequest(valid).answers.useState, "UNUSED"));
+test("resolve cannot include another photo", () => assert.throws(() => validateRequest({ ...valid, operation: "resolve", scanId: "a".repeat(40), expectedRevision: 0 }), { code: "invalid-argument" }));
+test("resolve revision must be an integer in bounds", () => assert.throws(() => validateRequest({ schemaVersion: 2, operation: "resolve", scanId: "a".repeat(40), expectedRevision: 0.5, requestId: crypto.randomUUID(), answers: valid.answers }), { code: "invalid-argument" }));
