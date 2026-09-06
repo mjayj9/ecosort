@@ -1,8 +1,10 @@
 "use strict";
 const {test} = require("node:test");
 const assert = require("node:assert/strict");
-const {readStream, analyzeWithNim} = require("../analysis");
-const fixture = {itemName:"용기", material:"PP", contaminationScore:45, confidence:0.91, decision:"WASH_THEN_RECYCLE", washSteps:["내용물을 비우고 헹구세요."], disposalGuide:"지역 플라스틱 배출 기준을 확인하세요.", reason:"잔여물이 보입니다.", warnings:[]};
+const {readStream: readTransportStream} = require("../analysis");
+const {parseObservation, analyzeObservation: analyzeWithNim} = require("../observations");
+const readStream = response => readTransportStream(response, parseObservation);
+const fixture = require("./fixtures/observation")();
 const event = value => `data: ${JSON.stringify(value)}\r\n\r\n`;
 const delta = text => event({choices:[{delta:{content:text},finish_reason:null}]});
 const finish = event({choices:[{delta:{},finish_reason:"stop"}]}) + "data: [DONE]\n\n";
@@ -17,8 +19,8 @@ function response(text, width = 13) {
 test("SSE preserves split UTF-8 content and ignores reasoning", async()=>{
  const text = event({choices:[{delta:{reasoning_content:"PRIVATE_REASONING_DO_NOT_RETURN"}}]}) + delta(JSON.stringify(fixture)) + finish;
  const result = await readStream(response(text));
- assert.equal(result.itemName,"용기");
- assert.equal(result.decision,"WASH_THEN_RECYCLE");
+ assert.equal(result.subject,"PLASTIC_CONTAINER");
+ assert.equal(result.interiorResidue,"VISIBLE");
  assert(!JSON.stringify(result).includes("PRIVATE"));
 });
 test("SSE truncated before DONE fails closed",async()=>assert.rejects(readStream(response(delta(JSON.stringify(fixture)))),{code:"data-loss"}));
@@ -39,7 +41,7 @@ test("provider stream error retries once and then returns the real next response
  const result=await analyzeWithNim(validJpeg,{apiKey:"unit-test-placeholder",fetchImpl:async()=>{
   calls++;return response(calls===1?event({error:{code:500,message:"PRIVATE_PROVIDER_ERROR"}}):delta(JSON.stringify(fixture))+finish);
  }});
- assert.equal(calls,2);assert.equal(result.itemName,fixture.itemName);
+ assert.equal(calls,2);assert.equal(result.subject,fixture.subject);
 });
 test("repeated provider stream errors stop after two attempts",async()=>{
  let calls=0;
@@ -55,4 +57,9 @@ test("retry delay is cancelled by the shared deadline",async()=>{
  let calls=0;
  await assert.rejects(analyzeWithNim(validJpeg,{apiKey:"unit-test-placeholder",timeoutMs:25,fetchImpl:async()=>{calls++;return response(event({error:{code:500}}));}}),{code:"deadline-exceeded"});
  assert.equal(calls,1);
+});
+
+test("transport preserves a Korean codepoint split across chunks", async () => {
+ const r = await readTransportStream(response(delta(JSON.stringify({ value: "음료팩" })) + finish, 1), JSON.parse);
+ assert.equal(r.value, "음료팩");
 });

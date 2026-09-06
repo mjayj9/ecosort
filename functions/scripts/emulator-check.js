@@ -5,13 +5,13 @@ process.env.FUNCTIONS_EMULATOR = "true";
 process.env.FIRESTORE_EMULATOR_HOST = "127.0.0.1:8080";
 process.env.FIREBASE_AUTH_EMULATOR_HOST = "127.0.0.1:9099";
 const assert = require("node:assert/strict");
+const crypto = require("node:crypto");
 const admin = require("firebase-admin");
 const nativeFetch = globalThis.fetch;
 const api = require("../index");
 const db = admin.firestore();
 const image = Buffer.from([255, 216, 255, 0, 255, 217]).toString("base64");
-const responseFixture = { itemName: "test fixture", material: "PP", contaminationScore: 3, confidence: 0.9,
- decision: "RECYCLE", washSteps: [], disposalGuide: "test disposal guide", reason: "test observed feature", warnings: [] };
+const responseFixture = require("../test/fixtures/observation")();
 async function main() {
  const signUp = await nativeFetch("http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signUp?key=local", {
   method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({returnSecureToken:true})});
@@ -38,13 +38,15 @@ async function main() {
   return {ok:true,status:200,json:async()=>({choices:[{finish_reason:"stop",message:{content:JSON.stringify(responseFixture)}}]})};
  };
  try {
-  const attempts=await Promise.allSettled(Array.from({length:5},()=>api.analyzeImage.run({auth:{uid},data:{image}})));
+  const attempts=await Promise.allSettled(Array.from({length:5},()=>api.analyzeImage.run({auth:{uid},data:{schemaVersion:2,operation:"analyze",requestId:crypto.randomUUID(),image,answers:{purpose:"PREVIEW",useState:"UNUSED"}}})));
   assert.equal(attempts.filter(x=>x.status==="fulfilled").length,1);
   assert.equal(attempts.filter(x=>x.status==="rejected" && x.reason.code==="resource-exhausted").length,4);
   assert.equal(providerCalls,1); assert.equal((await usage.get()).get("analyze"),30);
   const success=attempts.find(x=>x.status==="fulfilled").value;
   const scan=await db.collection("scans").doc(success.scanId).get();
-  assert.deepEqual(Object.keys(scan.data()).sort(),["confidence","createdAt","decision","model","uid"]);
+  assert.equal(scan.get("schemaVersion"), 2);
+  assert.equal(scan.get("observation.schemaVersion"), 2);
+  for (const field of ["image", "apiKey", "prompt", "rawOutput"]) assert.equal(scan.get(field), undefined);
   results.push("PASS: concurrent requests enforce remaining quota of one");
   results.push("PASS: scan records contain no image or key");
  } finally {

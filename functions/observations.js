@@ -55,6 +55,7 @@ const OBSERVATION_PROMPT = `너는 EcoSort의 사진 관찰기다. 최종 재활
 음료팩은 CARTON, 음료용 페트병 PET_BOTTLE, 일반 식품 플라스틱 용기 PLASTIC_CONTAINER, 음료/식품 금속캔 METAL_CAN,
 온전한 음료/식품 유리병 GLASS_BOTTLE, 종이상자 PAPER_BOX. 접시·도자기·기타 물품은 OTHER. 모르겠으면 UNKNOWN.
 배터리·약품·날카롭거나 깨진 물품·가스/살충제 캔은 risk SUSPECTED로 둔다. 위험 여부를 판단하지 못하면 UNKNOWN.
+뚜껑이 닫힌 것만으로 미개봉이라고 단정하지 않는다. 봉인 상태를 확인하지 못하면 opening UNKNOWN이다.
 빨대가 포장 밖에 부착된 것과 실제로 꽂힌 것은 다르다. 개봉부가 안 보이면 opening UNKNOWN. 인쇄 그림은 물품 상태가 아니다.
 불투명한 포장, 닫힌 용기, 미개봉 제품 내부는 관찰할 수 없다. NOT_VISIBLE과 interiorResidue UNKNOWN을 사용한다.
 interiorResidue는 실제로 보이는 안쪽 잔여물만 판단한다. 외부 인쇄/반사/그림자를 내부 오염으로 쓰지 않는다.

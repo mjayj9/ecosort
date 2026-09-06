@@ -48,7 +48,7 @@ fun GuidanceCard(result: GuidanceResult, answers: ScanAnswers, enabled: Boolean,
                 Text(result.itemName + " · " + result.materialLabel, style = MaterialTheme.typography.titleMedium)
                 Text(result.summary)
             }
-            result.questions.forEach { question ->
+            result.questions.filter { questionApplies(it, answers) }.forEach { question ->
                 Text(question.title, fontWeight = FontWeight.Bold)
                 question.choices.forEach { choice ->
                     AnswerRow(choice.label, answers.toMap()[question.key] == choice.value, enabled) { onChoose(question.key, choice.value) }

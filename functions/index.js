@@ -4,9 +4,9 @@ const { ContextError } = require("./context");
 const { analyzeObservation } = require("./observations");
 const { createScanService } = require("./scan-service");
 const admin = require("firebase-admin");
-const { FieldValue } = require("firebase-admin/firestore");
+const { FieldValue, FieldPath } = require("firebase-admin/firestore");
 const crypto = require("node:crypto");
-const { MODEL, OMNI_MODEL, validateModel, AnalysisError, validateImage, analyzeWithNim } = require("./analysis");
+const { MODEL, OMNI_MODEL, validateModel, AnalysisError } = require("./analysis");
 admin.initializeApp();
 const db = admin.firestore();
 const nvidiaApiKey = defineSecret("NVIDIA_API_KEY");
@@ -212,8 +212,8 @@ exports.deleteAccount = onCall({ ...runtimeOptions, timeoutSeconds: 150, invoker
   // 3. 일일 사용량 문서 삭제
   const usagePrefix = `${uid}_`;
   const usageSnap = await db.collection("usage")
-    .where(admin.firestore.FieldPath.documentId(), ">=", usagePrefix)
-    .where(admin.firestore.FieldPath.documentId(), "<", usagePrefix + "\uf8ff")
+    .where(FieldPath.documentId(), ">=", usagePrefix)
+    .where(FieldPath.documentId(), "<", usagePrefix + "\uf8ff")
     .get();
   if (!usageSnap.empty) {
     const batch = db.batch();

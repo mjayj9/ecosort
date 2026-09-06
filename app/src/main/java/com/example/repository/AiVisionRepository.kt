@@ -16,9 +16,10 @@ object AiVisionRepository {
     private suspend fun call(name: String, data: Map<String, Any>): Map<*, *> {
         check(FirebaseBackend.auth.currentUser != null) { "로그인이 만료되었습니다. 설정에서 다시 로그인해 주세요." }
         try {
-            return withTimeout(125000) {
+            val timeoutMs = if (data["operation"] == "resolve") 20000L else 125000L
+            return withTimeout(timeoutMs) {
                 val callable = FirebaseBackend.functions.getHttpsCallable(name)
-                callable.setTimeout(125, TimeUnit.SECONDS)
+                callable.setTimeout(timeoutMs, TimeUnit.MILLISECONDS)
                 callable.call(data).await().data as? Map<*, *> ?: error("서버 응답 형식이 올바르지 않습니다.")
             }
         } catch (e: TimeoutCancellationException) {
@@ -34,12 +35,13 @@ object AiVisionRepository {
             val message = when (e.code) {
                 FirebaseFunctionsException.Code.UNAUTHENTICATED -> "로그인이 만료되었습니다. 설정에서 다시 로그인해 주세요."
                 FirebaseFunctionsException.Code.PERMISSION_DENIED -> "앱 인증에 실패했습니다. 운영자가 App Check 설정을 확인해야 합니다."
-                FirebaseFunctionsException.Code.RESOURCE_EXHAUSTED -> "사용량 제한에 도달했습니다. 잠시 후 다시 시도해 주세요. 일일 한도는 30회입니다."
+                FirebaseFunctionsException.Code.RESOURCE_EXHAUSTED -> e.message ?: "사용량 제한에 도달했습니다. 잠시 후 다시 시도해 주세요."
                 FirebaseFunctionsException.Code.DEADLINE_EXCEEDED -> "분석 시간이 초과되었습니다. 다시 시도해 주세요."
                 FirebaseFunctionsException.Code.FAILED_PRECONDITION -> e.message ?: "서버 설정을 확인해 주세요."
                 FirebaseFunctionsException.Code.DATA_LOSS -> "AI 응답을 해석하지 못했습니다. 다시 분석하거나 재촬영해 주세요."
-                FirebaseFunctionsException.Code.INVALID_ARGUMENT -> "사진 형식을 확인할 수 없습니다. 다른 사진을 선택해 주세요."
-                FirebaseFunctionsException.Code.NOT_FOUND -> "분석 서버를 찾을 수 없습니다. 서버 실행과 앱 연결 설정을 확인해 주세요."
+                FirebaseFunctionsException.Code.INVALID_ARGUMENT -> e.message ?: "사진과 상태 선택값을 확인해 주세요."
+                FirebaseFunctionsException.Code.NOT_FOUND -> "분석 서버 또는 이 계정의 기록을 찾지 못했습니다. 현재 사진을 다시 분석해 주세요."
+                FirebaseFunctionsException.Code.ABORTED -> e.message ?: "다른 요청이 먼저 처리되었습니다. 잠시 후 다시 시도하거나 현재 사진을 다시 분석해 주세요."
                 else -> "서버에 연결하지 못했습니다. 인터넷 연결과 서버 상태를 확인하고 다시 시도해 주세요."
             }
             error(message)
@@ -47,11 +49,18 @@ object AiVisionRepository {
             error("서버 연결을 준비하지 못했습니다. 인터넷 연결과 앱 서버 설정을 확인해 주세요.")
         }
     }
-    suspend fun analyzeWasteImage(bitmap: Bitmap): AnalysisResult = withContext(Dispatchers.IO) {
-        val result = call("analyzeImage", mapOf("image" to ImageCodec.encode(bitmap)))
-        try { AnalysisResult.fromMap(result) } catch (_: Exception) {
-            error("AI 응답 형식이 올바르지 않습니다. 다시 분석해 주세요.")
-        }
+    private fun parseGuidance(raw: Map<*, *>): GuidanceResult = try {
+        GuidanceResult.fromMap(raw)
+    } catch (_: Exception) { error("서버 안내를 확인하지 못했습니다. 최신 앱인지 확인하고 다시 시도해 주세요.") }
+
+    suspend fun analyzeWasteImage(bitmap: Bitmap, answers: ScanAnswers, requestId: String): GuidanceResult = withContext(Dispatchers.IO) {
+        check(answers.readyForAnalysis) { "사용 목적과 현재 상태를 선택해 주세요." }
+        parseGuidance(call("analyzeImage", mapOf("schemaVersion" to 2, "operation" to "analyze", "requestId" to requestId,
+            "image" to ImageCodec.encode(bitmap), "answers" to answers.toMap())))
+    }
+    suspend fun resolveWasteState(scanId: String, revision: Int, answers: ScanAnswers, requestId: String): GuidanceResult = withContext(Dispatchers.IO) {
+        parseGuidance(call("analyzeImage", mapOf("schemaVersion" to 2, "operation" to "resolve", "requestId" to requestId,
+            "scanId" to scanId, "expectedRevision" to revision, "answers" to answers.toMap())))
     }
     suspend fun deleteAccount(): String = try {
         JSONObject(call("deleteAccount", emptyMap())).toString()

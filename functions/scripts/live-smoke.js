@@ -1,6 +1,7 @@
 // Real provider smoke test, never substitutes a result or reads a key file.
 const fs = require("node:fs");
-const { analyzeWithNim, OMNI_MODEL, validateModel } = require("../analysis");
+const { OMNI_MODEL, validateModel } = require("../analysis");
+const { analyzeObservation: analyzeWithNim } = require("../observations");
 async function main() {
   if (!process.env.NVIDIA_API_KEY) throw new Error("NVIDIA_API_KEY 환경변수가 필요합니다.");
   const paths = process.argv.slice(2);
