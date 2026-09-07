@@ -24,3 +24,5 @@ npm.cmd test
 클라우드 앱 1.2(versionCode 3)과 V2 서버를 함께 사용해야 합니다. 구버전 APK는 업데이트 안내를 받습니다. 새 Debug 기기는 앱 실행 후 `npm.cmd run register:device -- 기기ID`로 App Check 등록이 필요합니다. 현재 등록된 기기의 실제 익명 로그인을 시연 경로로 사용합니다. Play Store는 업데이트하지 않았습니다.
 
 NVIDIA 키는 서버 환경변수/Firebase Secret만 사용합니다. 사진·원문 응답은 Firestore에 저장하지 않습니다. 서버는 재판정을 위해 정규화한 관찰·사용자 답변·결과·제한 메타데이터를 저장합니다. 포인트·쿠폰·단지 순위·광고는 향후 계획입니다.
+
+2단계부터 실제 Firebase 설정은 Git에서 제외합니다. 새 체크아웃에서는 루트 `configure-firebase.ps1 -Source "다운로드한 google-services.json 경로"`를 먼저 실행하세요. 현재 키는 유지했고, 과거 프로젝트 노출 키만 폐기했습니다. 기존 커밋의 소스는 복구 가능하지만 과거 키는 복구해 사용하지 마세요.

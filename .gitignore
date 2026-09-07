@@ -38,3 +38,6 @@ functions/*-debug.log
 # Local IDE state and generated release bundles
 /.idea/
 /app/release/
+
+# Firebase client configuration is provisioned locally; never track credentials.
+/app/google-services.json

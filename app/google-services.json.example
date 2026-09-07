@@ -20,7 +20,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDvReyZIxEX-OB2o4oPm7Kux7D__Qzk5Fw"
+          "current_key": "LOCAL_FIREBASE_CLIENT_KEY"
         }
       ],
       "services": {
