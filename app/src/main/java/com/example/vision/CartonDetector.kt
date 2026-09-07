@@ -21,6 +21,7 @@ data class Panel(val id: String, val label: String, val bitmap: Bitmap)
 /** Receives only pixels. Renderer face IDs, product state and expected corners are not inputs. */
 class CartonDetector(context: Context) : AutoCloseable {
     private val orb: ORB
+    private var lastFace: String?=null
     private val matcher: DescriptorMatcher
     private data class Reference(val panel: Panel, val keys: Array<KeyPoint>, val descriptor: Mat)
     val panels: List<Panel>
@@ -28,7 +29,7 @@ class CartonDetector(context: Context) : AutoCloseable {
     init {
         check(OpenCVLoader.initLocal()) { "기기의 영상 처리 모듈을 시작하지 못했습니다." }
         Core.setNumThreads(1)
-        orb = ORB.create(1600)
+        orb = ORB.create(1200)
         matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING)
         panels = listOf("front" to "앞면", "back" to "뒷면·부착 빨대", "ingredients" to "원재료 면", "nutrition" to "분리배출 표시 면", "top" to "윗면", "bottom" to "아랫면").map { (id,label) ->
             Panel(id,label,context.assets.open("carton/$id.jpg").use { BitmapFactory.decodeStream(it) })
@@ -48,10 +49,15 @@ class CartonDetector(context: Context) : AutoCloseable {
         val start=SystemClock.elapsedRealtime(); val gray=gray(bitmap);val keys=MatOfKeyPoint();val descriptor=Mat();val mask=Mat()
         try {
             orb.detectAndCompute(gray,mask,keys,descriptor)
-            if(descriptor.empty())return Detection(null,SystemClock.elapsedRealtime()-start)
+            if(descriptor.empty()){lastFace=null;return Detection(null,SystemClock.elapsedRealtime()-start)}
             val target=keys.toArray()
-            val candidates=references.mapNotNull { reference -> match(reference,target,descriptor,bitmap.width,bitmap.height) }
+            // Prioritize a previously OBSERVED panel, never a renderer hint. Revalidate from current pixels.
+            val previous=references.firstOrNull { it.panel.id==lastFace }
+            val quick=previous?.let { match(it,target,descriptor,bitmap.width,bitmap.height) }
+            if(quick!=null&&quick.inliers>=35)return Detection(quick,SystemClock.elapsedRealtime()-start)
+            val candidates=references.filter { it!==previous }.mapNotNull { reference -> match(reference,target,descriptor,bitmap.width,bitmap.height) } + listOfNotNull(quick)
             val best=candidates.maxByOrNull { it.inliers }
+            lastFace=best?.face
             return Detection(best,SystemClock.elapsedRealtime()-start)
         } finally { gray.release();keys.release();descriptor.release();mask.release() }
     }

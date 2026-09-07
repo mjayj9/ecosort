@@ -205,6 +205,7 @@ fun LoginScreen(onLoginSuccess: (isNewUser: Boolean) -> Unit) {
                 )
             }
         }
+        OutlinedButton(onClick = { context.startActivity(android.content.Intent(context, com.example.RecognitionActivity::class.java)) }, modifier = Modifier.fillMaxWidth()) { Text("카메라 없이 6면 인식") }
     }
 
 

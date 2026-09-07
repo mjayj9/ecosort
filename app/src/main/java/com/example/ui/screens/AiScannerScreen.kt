@@ -50,6 +50,9 @@ fun AiScannerScreen(scanner: ScannerViewModel = viewModel()) {
         if (granted) openCamera() else scanner.showError("카메라 권한이 필요합니다. 사진 선택은 권한 없이 이용할 수 있어요.")
     }
     val gallery = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri -> uri?.let { scanner.select(it) } }
+    val recognition = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) result.data?.data?.let { scanner.select(it) }
+    }
     val result = scanner.result
     val scroll = rememberScrollState()
     LaunchedEffect(result, scanner.error) { if (result != null || scanner.error != null) scroll.animateScrollTo(0) }
@@ -58,6 +61,7 @@ fun AiScannerScreen(scanner: ScannerViewModel = viewModel()) {
         Text("물품 상태를 확인하고 배출을 준비해요", style = MaterialTheme.typography.titleMedium)
         Text("물품 한 개를 밝고 선명하게 보여 주세요. 미개봉 제품은 그대로 촬영해도 됩니다.")
         if (BuildConfig.USE_FIREBASE_EMULATORS) Text("로컬 Firebase · 실제 NVIDIA NIM 분석", style = MaterialTheme.typography.labelMedium)
+        OutlinedButton(onClick = { recognition.launch(android.content.Intent(context, com.example.RecognitionActivity::class.java).putExtra("allow_handoff", true)) }, enabled = !scanner.busy) { Text("카메라 없이 6면 인식") }
         scanner.error?.let { message ->
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
