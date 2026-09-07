@@ -13,8 +13,8 @@ android {
     applicationId = "com.aistudio.ecosort.kxmpzq"
     minSdk = 24
     targetSdk = 36
-    versionCode = 3
-    versionName = "1.2"
+    versionCode = 4
+    versionName = "1.3"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -76,6 +76,9 @@ android {
 // Some unused dependencies are commented out below instead of being removed.
 // This makes it easy to add them back in the future if needed.
 dependencies {
+  implementation("org.opencv:opencv:4.13.0")
+  androidTestImplementation(libs.androidx.junit)
+  androidTestImplementation(libs.androidx.runner)
   implementation(platform(libs.androidx.compose.bom))
   implementation(platform(libs.firebase.bom))
   implementation(libs.accompanist.permissions)

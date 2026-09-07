@@ -1,0 +1,1 @@
+User-supplied six panel photos, geometrically rectified. One registered packaging design. Reference reuse and synthetic transforms do not establish real-world accuracy. No image contains or supplies a precomputed detection result.
