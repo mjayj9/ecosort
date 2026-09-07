@@ -1,0 +1,50 @@
+{
+  "date": "2026-09-07",
+  "versionName": "1.3",
+  "versionCode": 4,
+  "sourceImplementationCommit": "f2c3045",
+  "debugBuild": "PASS",
+  "releaseUnsignedBuild": "PASS",
+  "androidUnit": {
+    "tests": 25,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "server": {
+    "passed": 98,
+    "failed": 0
+  },
+  "nativeInstrumentation": {
+    "tests": 1,
+    "passed": 1,
+    "syntheticMatches": 18,
+    "syntheticInputs": 18,
+    "registrationOriginalMatches": 6,
+    "registrationOriginalInputs": 6,
+    "negativeBottleRejected": true,
+    "blankRejected": true,
+    "independentAccuracy": false
+  },
+  "ui": {
+    "cameraPermissionGranted": false,
+    "emulator": "emulator-5556",
+    "syntheticMoving": true,
+    "partialOcclusion": true,
+    "targetHiddenClearsOverlay": true,
+    "realPhotoPickerFront": true,
+    "realPhotoHandoffToStateForm": true,
+    "realCameraStreamTested": false
+  },
+  "cloud": {
+    "firstAttemptHttp": 503,
+    "manualRetrySuccessImages": 2,
+    "testsUsedActualNim": true,
+    "unusedIsUserTestInput": true,
+    "temporaryAccountsDeleted": true
+  },
+  "deployment": {
+    "newFunctionsDeployment": false,
+    "playStore": false
+  }
+}

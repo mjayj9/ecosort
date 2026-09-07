@@ -1,0 +1,31 @@
+{
+  "debug": {
+    "bytes": 175386230,
+    "sha256": "8fcea8b677c73837290af4b688e4aaf0fbba13324598641dbef65e67571540b1",
+    "credentialPatternFindings": [
+      {
+        "entry": "classes10.dex",
+        "type": "private",
+        "fingerprint": "3021d90eb943",
+        "classification": "dependency-parser-constant-not-key",
+        "completePemBlocks": 0,
+        "dependencyClass": "io/grpc/util/CertificateUtils.class"
+      }
+    ],
+    "knownFirebasePublicIdentifierEntries": [
+      "resources.arsc"
+    ],
+    "directNvidiaEndpointEntries": [],
+    "unresolvedCredentialFindings": 0
+  },
+  "release": {
+    "bytes": 151679124,
+    "sha256": "ca3162fd13756d67f9faa0db7155c91a1d2f0cd971cf596eb9a5168411a8d4d9",
+    "credentialPatternFindings": [],
+    "knownFirebasePublicIdentifierEntries": [
+      "resources.arsc"
+    ],
+    "directNvidiaEndpointEntries": [],
+    "unresolvedCredentialFindings": 0
+  }
+}

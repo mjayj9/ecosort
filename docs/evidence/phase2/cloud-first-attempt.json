@@ -1,0 +1,25 @@
+{
+  "realNim": true,
+  "cameraUsed": false,
+  "accuracyBenchmark": false,
+  "userStateIsTestInput": true,
+  "rows": [
+    {
+      "photo": "IMG_1556.jpg",
+      "initial": {
+        "http": 503,
+        "ms": 6388,
+        "body": {
+          "error": {
+            "message": "AI 제공사에서 일시적인 오류가 발생했습니다. 잠시 후 같은 사진으로 다시 시도해 주세요.",
+            "status": "UNAVAILABLE"
+          }
+        }
+      }
+    }
+  ],
+  "cleanup": {
+    "http": 200,
+    "success": true
+  }
+}

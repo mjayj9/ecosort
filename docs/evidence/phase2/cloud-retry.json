@@ -1,0 +1,292 @@
+{
+  "realNim": true,
+  "cameraUsed": false,
+  "accuracyBenchmark": false,
+  "userStateIsTestInput": true,
+  "rows": [
+    {
+      "photo": "IMG_1556.jpg",
+      "initial": {
+        "http": 200,
+        "ms": 16035,
+        "body": {
+          "result": {
+            "schemaVersion": 2,
+            "status": "NEEDS_CONFIRMATION",
+            "title": "상태를 조금 더 확인해 주세요",
+            "itemName": "음료팩",
+            "materialLabel": "세부 재질 확인 전",
+            "decision": null,
+            "contaminationScore": null,
+            "guideScope": "COMMON_PREPARATION",
+            "ruleVersion": "2026-09-07.1",
+            "ruleId": null,
+            "summary": "사진만으로 확인하지 못한 정보가 있어요. 직접 확인할 수 없다면 모르겠음을 선택하세요.",
+            "evidence": [
+              {
+                "label": "사용 목적",
+                "value": "사용 후 배출법 미리 보기",
+                "source": "USER"
+              },
+              {
+                "label": "사용 상태",
+                "value": "미개봉·미사용",
+                "source": "USER"
+              },
+              {
+                "label": "물품 종류",
+                "value": "음료팩",
+                "source": "AI"
+              },
+              {
+                "label": "내부 상태",
+                "value": "현재 내부의 오염 상태를 판단하지 않았어요",
+                "source": "LIMIT"
+              }
+            ],
+            "limits": [
+              "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요."
+            ],
+            "questions": [
+              {
+                "key": "material",
+                "title": "물품의 표시나 종류를 직접 확인해 주세요. 확인하기 위해 미개봉 제품을 뜯지 마세요.",
+                "choices": [
+                  {
+                    "value": "CARTON_GENERAL",
+                    "label": "표시: 일반팩(살균팩)"
+                  },
+                  {
+                    "value": "CARTON_ASEPTIC",
+                    "label": "표시: 멸균팩"
+                  },
+                  {
+                    "value": "UNKNOWN",
+                    "label": "표시나 재질을 확인할 수 없어요"
+                  }
+                ]
+              }
+            ],
+            "steps": [],
+            "sources": [],
+            "scanId": "fcdd746fa53f335f13a3bd407e136685331274ff",
+            "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+            "revision": 0
+          }
+        }
+      },
+      "afterLabelConfirmation": {
+        "http": 200,
+        "ms": 638,
+        "body": {
+          "result": {
+            "schemaVersion": 2,
+            "status": "PREVIEW",
+            "title": "사용 후 배출법 미리 보기",
+            "itemName": "음료팩",
+            "materialLabel": "멸균팩 · 사용자 확인",
+            "decision": null,
+            "contaminationScore": null,
+            "guideScope": "COMMON_PREPARATION",
+            "ruleVersion": "2026-09-07.1",
+            "ruleId": "carton-preparation",
+            "summary": "아래는 나중에 사용을 마치고 내용물을 비운 뒤 참고할 공통 준비 방법입니다. 현재 제품에 세척이 필요하다는 판정이 아닙니다.",
+            "evidence": [
+              {
+                "label": "사용 목적",
+                "value": "사용 후 배출법 미리 보기",
+                "source": "USER"
+              },
+              {
+                "label": "사용 상태",
+                "value": "미개봉·미사용",
+                "source": "USER"
+              },
+              {
+                "label": "물품 종류",
+                "value": "음료팩",
+                "source": "AI"
+              },
+              {
+                "label": "내부 상태",
+                "value": "현재 내부의 오염 상태를 판단하지 않았어요",
+                "source": "LIMIT"
+              },
+              {
+                "label": "포장재 표시·종류",
+                "value": "멸균팩",
+                "source": "USER"
+              }
+            ],
+            "limits": [
+              "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요."
+            ],
+            "questions": [],
+            "steps": [
+              "사용 후 내용물을 비운 음료팩은 안쪽의 잔여물을 물로 헹궈 제거하세요.",
+              "물기를 말리고, 쉽게 분리되는 다른 재질의 부속품은 분리하세요.",
+              "일반 종이와 섞어도 된다고 가정하지 말고, 해당 종류의 종이팩 수거 방법을 확인하세요."
+            ],
+            "sources": [
+              {
+                "title": "환경부 · 종이팩·금속캔 분리배출 안내 (2022)",
+                "url": "https://me.go.kr/m/mob/board/read.do?boardId=1525580&boardMasterId=53&menuId=58"
+              },
+              {
+                "title": "서울시 · 종이팩 전용수거함 안내 (2025, 서울시 사례)",
+                "url": "https://news.seoul.go.kr/env/archives/564359"
+              }
+            ],
+            "scanId": "fcdd746fa53f335f13a3bd407e136685331274ff",
+            "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+            "revision": 1
+          }
+        }
+      }
+    },
+    {
+      "photo": "IMG_1557.jpg",
+      "initial": {
+        "http": 200,
+        "ms": 61799,
+        "body": {
+          "result": {
+            "schemaVersion": 2,
+            "status": "NEEDS_CONFIRMATION",
+            "title": "상태를 조금 더 확인해 주세요",
+            "itemName": "음료팩",
+            "materialLabel": "세부 재질 확인 전",
+            "decision": null,
+            "contaminationScore": null,
+            "guideScope": "COMMON_PREPARATION",
+            "ruleVersion": "2026-09-07.1",
+            "ruleId": null,
+            "summary": "사진만으로 확인하지 못한 정보가 있어요. 직접 확인할 수 없다면 모르겠음을 선택하세요.",
+            "evidence": [
+              {
+                "label": "사용 목적",
+                "value": "사용 후 배출법 미리 보기",
+                "source": "USER"
+              },
+              {
+                "label": "사용 상태",
+                "value": "미개봉·미사용",
+                "source": "USER"
+              },
+              {
+                "label": "물품 종류",
+                "value": "음료팩",
+                "source": "AI"
+              },
+              {
+                "label": "내부 상태",
+                "value": "현재 내부의 오염 상태를 판단하지 않았어요",
+                "source": "LIMIT"
+              }
+            ],
+            "limits": [
+              "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요."
+            ],
+            "questions": [
+              {
+                "key": "material",
+                "title": "물품의 표시나 종류를 직접 확인해 주세요. 확인하기 위해 미개봉 제품을 뜯지 마세요.",
+                "choices": [
+                  {
+                    "value": "CARTON_GENERAL",
+                    "label": "표시: 일반팩(살균팩)"
+                  },
+                  {
+                    "value": "CARTON_ASEPTIC",
+                    "label": "표시: 멸균팩"
+                  },
+                  {
+                    "value": "UNKNOWN",
+                    "label": "표시나 재질을 확인할 수 없어요"
+                  }
+                ]
+              }
+            ],
+            "steps": [],
+            "sources": [],
+            "scanId": "2522bf349e0e14e7fb7ae4e7d49577006f2209f5",
+            "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+            "revision": 0
+          }
+        }
+      },
+      "afterLabelConfirmation": {
+        "http": 200,
+        "ms": 440,
+        "body": {
+          "result": {
+            "schemaVersion": 2,
+            "status": "PREVIEW",
+            "title": "사용 후 배출법 미리 보기",
+            "itemName": "음료팩",
+            "materialLabel": "멸균팩 · 사용자 확인",
+            "decision": null,
+            "contaminationScore": null,
+            "guideScope": "COMMON_PREPARATION",
+            "ruleVersion": "2026-09-07.1",
+            "ruleId": "carton-preparation",
+            "summary": "아래는 나중에 사용을 마치고 내용물을 비운 뒤 참고할 공통 준비 방법입니다. 현재 제품에 세척이 필요하다는 판정이 아닙니다.",
+            "evidence": [
+              {
+                "label": "사용 목적",
+                "value": "사용 후 배출법 미리 보기",
+                "source": "USER"
+              },
+              {
+                "label": "사용 상태",
+                "value": "미개봉·미사용",
+                "source": "USER"
+              },
+              {
+                "label": "물품 종류",
+                "value": "음료팩",
+                "source": "AI"
+              },
+              {
+                "label": "내부 상태",
+                "value": "현재 내부의 오염 상태를 판단하지 않았어요",
+                "source": "LIMIT"
+              },
+              {
+                "label": "포장재 표시·종류",
+                "value": "멸균팩",
+                "source": "USER"
+              }
+            ],
+            "limits": [
+              "지자체·공동주택별 수거 기준은 확인하지 않았습니다. 아래 내용은 공통 준비 안내이며, 최종 배출 장소와 수거 가능 여부는 거주지 안내를 확인하세요."
+            ],
+            "questions": [],
+            "steps": [
+              "사용 후 내용물을 비운 음료팩은 안쪽의 잔여물을 물로 헹궈 제거하세요.",
+              "물기를 말리고, 쉽게 분리되는 다른 재질의 부속품은 분리하세요.",
+              "일반 종이와 섞어도 된다고 가정하지 말고, 해당 종류의 종이팩 수거 방법을 확인하세요."
+            ],
+            "sources": [
+              {
+                "title": "환경부 · 종이팩·금속캔 분리배출 안내 (2022)",
+                "url": "https://me.go.kr/m/mob/board/read.do?boardId=1525580&boardMasterId=53&menuId=58"
+              },
+              {
+                "title": "서울시 · 종이팩 전용수거함 안내 (2025, 서울시 사례)",
+                "url": "https://news.seoul.go.kr/env/archives/564359"
+              }
+            ],
+            "scanId": "2522bf349e0e14e7fb7ae4e7d49577006f2209f5",
+            "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+            "revision": 1
+          }
+        }
+      }
+    }
+  ],
+  "cleanup": {
+    "http": 200,
+    "success": true
+  }
+}

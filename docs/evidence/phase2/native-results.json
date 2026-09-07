@@ -1,0 +1,197 @@
+{
+  "independentAccuracyBenchmark": false,
+  "cameraUsed": false,
+  "rows": [
+    {
+      "input": "front",
+      "angle": -25,
+      "detected": "front",
+      "ms": 446,
+      "inliers": 158,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "front",
+      "angle": 0,
+      "detected": "front",
+      "ms": 83,
+      "inliers": 143,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "front",
+      "angle": 25,
+      "detected": "front",
+      "ms": 76,
+      "inliers": 163,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "back",
+      "angle": -25,
+      "detected": "back",
+      "ms": 348,
+      "inliers": 121,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "back",
+      "angle": 0,
+      "detected": "back",
+      "ms": 91,
+      "inliers": 122,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "back",
+      "angle": 25,
+      "detected": "back",
+      "ms": 126,
+      "inliers": 127,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "ingredients",
+      "angle": -25,
+      "detected": "ingredients",
+      "ms": 295,
+      "inliers": 56,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "ingredients",
+      "angle": 0,
+      "detected": "ingredients",
+      "ms": 57,
+      "inliers": 47,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "ingredients",
+      "angle": 25,
+      "detected": "ingredients",
+      "ms": 90,
+      "inliers": 60,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "nutrition",
+      "angle": -25,
+      "detected": "nutrition",
+      "ms": 277,
+      "inliers": 41,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "nutrition",
+      "angle": 0,
+      "detected": "nutrition",
+      "ms": 351,
+      "inliers": 29,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "nutrition",
+      "angle": 25,
+      "detected": "nutrition",
+      "ms": 63,
+      "inliers": 45,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "top",
+      "angle": -25,
+      "detected": "top",
+      "ms": 325,
+      "inliers": 207,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "top",
+      "angle": 0,
+      "detected": "top",
+      "ms": 64,
+      "inliers": 202,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "top",
+      "angle": 25,
+      "detected": "top",
+      "ms": 54,
+      "inliers": 187,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "bottom",
+      "angle": -25,
+      "detected": "bottom",
+      "ms": 261,
+      "inliers": 306,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "bottom",
+      "angle": 0,
+      "detected": "bottom",
+      "ms": 93,
+      "inliers": 303,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "bottom",
+      "angle": 25,
+      "detected": "bottom",
+      "ms": 63,
+      "inliers": 273,
+      "kind": "synthetic-reference-transform"
+    },
+    {
+      "input": "different-bottle",
+      "ms": 199,
+      "kind": "negative-real-photo"
+    },
+    {
+      "input": "IMG_1554",
+      "detected": "back",
+      "ms": 227,
+      "inliers": 214,
+      "kind": "registration-original-not-independent"
+    },
+    {
+      "input": "IMG_1555",
+      "detected": "ingredients",
+      "ms": 263,
+      "inliers": 108,
+      "kind": "registration-original-not-independent"
+    },
+    {
+      "input": "IMG_1556",
+      "detected": "front",
+      "ms": 226,
+      "inliers": 190,
+      "kind": "registration-original-not-independent"
+    },
+    {
+      "input": "IMG_1557",
+      "detected": "nutrition",
+      "ms": 271,
+      "inliers": 60,
+      "kind": "registration-original-not-independent"
+    },
+    {
+      "input": "IMG_1558",
+      "detected": "top",
+      "ms": 251,
+      "inliers": 192,
+      "kind": "registration-original-not-independent"
+    },
+    {
+      "input": "IMG_1559",
+      "detected": "bottom",
+      "ms": 294,
+      "inliers": 306,
+      "kind": "registration-original-not-independent"
+    }
+  ]
+}
