@@ -54,6 +54,8 @@ node functions/scripts/live-carton-check.js result.json front.jpg nutrition.jpg
 
 처음 기존 `emulator-5554`에 connectedDebugAndroidTest를 실행했을 때 저장 공간 부족으로 설치가 실패했다. 이 실패 과정에서 테스트 도구가 기존 앱을 제거했다. 다른 사용자 앱·데이터를 지우지 않고 작업 폴더에 별도 `EcoSort_Phase2` AVD를 만들어 `emulator-5556`에서 검증했다. 새 기기 부팅 완료 전의 첫 설치도 실패하여 부팅 완료를 확인한 뒤 설치했다.
 
+검증 완료 후 보관한 1단계 APK를 `emulator-5554`에 다시 설치했고 Success를 확인했다. 테스트 도구 제거 이전의 계정·앱 데이터를 복구한 것은 아니다.
+
 최종 APK는 `emulator-5556`에 설치했다. `emulator-5554`에 최신 앱을 설치했다고 주장하지 않는다. OpenCV 여러 ABI를 포함한 universal Debug APK는 약 175.4MB, Release unsigned는 약 151.7MB다. 배포 크기 최적화는 이번 범위에서 하지 않았다.
 
 ## 보안 확인 범위
